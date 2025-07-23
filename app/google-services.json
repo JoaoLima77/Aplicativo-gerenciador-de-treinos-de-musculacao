@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "744671942826",
+    "project_id": "aplicativo-tcc-3e1db",
+    "storage_bucket": "aplicativo-tcc-3e1db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744671942826:android:31e52550a58a5643ccd8d3",
+        "android_client_info": {
+          "package_name": "com.example.aplicativotcc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzRPz_wveV4qJTIS9LF7y4p5t2cSV3DDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

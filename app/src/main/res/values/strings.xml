@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">aplicativo TCC</string>
+    <string name="dica_email">Digite seu email</string>
+    <string name="dica_senha">Digite sua senha</string>
+    <string name="botao_entrar">Entrar</string>
+    <string name="botao_registrar">Registrar</string>
+    <string name="planos">Meus planos de treino</string>
+    <string name="botao_adicionar">+</string>
+    <string name="descricao_planos">Lista de planos de treino</string>
+    <string name="rotinas">Minhas rotinas</string>
+    <string name="descricao_rotinas">Lista de rotinas de treino</string>
+    <string name="botao_voltar">Voltar</string>
+    <string name="botao_logout">Sair da conta</string>
+    <string name="exercicios">Exercícios</string>
+    <string name="planosmenu">Planos</string>
+    <string name="exerciciosmenu">Exercícios</string>
+    <string name="contamenu">Conta</string>"
+    <string name="excluir_exercicio">Excluir exercício</string>
+    <string name="nome_do_exerc_cio">Nome do exercício</string>
+
+</resources>

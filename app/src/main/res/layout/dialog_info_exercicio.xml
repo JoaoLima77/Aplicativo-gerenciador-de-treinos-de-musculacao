@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/editSeries"
+        android:layout_width="370dp"
+        android:layout_height="48dp"
+        android:hint="Séries"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editReps"
+        android:layout_width="370dp"
+        android:layout_height="48dp"
+        android:hint="Repetições"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editPeso"
+        android:layout_width="370dp"
+        android:layout_height="48dp"
+        android:hint="Peso (kg)"
+        android:inputType="numberDecimal" />
+</LinearLayout>
