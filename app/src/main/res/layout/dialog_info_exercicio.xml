@@ -8,20 +8,20 @@
         android:id="@+id/editSeries"
         android:layout_width="370dp"
         android:layout_height="48dp"
-        android:hint="Séries"
+        android:hint="@string/s_ries"
         android:inputType="number" />
 
     <EditText
         android:id="@+id/editReps"
         android:layout_width="370dp"
         android:layout_height="48dp"
-        android:hint="Repetições"
+        android:hint="@string/repeti_es"
         android:inputType="number" />
 
     <EditText
         android:id="@+id/editPeso"
         android:layout_width="370dp"
         android:layout_height="48dp"
-        android:hint="Peso (kg)"
+        android:hint="@string/peso_kg"
         android:inputType="numberDecimal" />
 </LinearLayout>
