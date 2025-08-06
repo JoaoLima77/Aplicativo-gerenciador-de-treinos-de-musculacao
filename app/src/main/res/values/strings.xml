@@ -17,5 +17,21 @@
     <string name="contamenu">Conta</string>"
     <string name="excluir_exercicio">Excluir exercício</string>
     <string name="nome_do_exerc_cio">Nome do exercício</string>
+    <string name="exerc_cios_da_rotina">Exercícios da Rotina</string>
+    <string name="lista_de_exerc_cios_da_rotina">Lista de exercícios da rotina</string>
+    <string name="adicionar1">+</string>
+    <string name="repeti_es">Repetições</string>
+    <string name="s_ries">Séries</string>
+    <string name="peso_kg">Peso (kg)</string>
+    <string name="adicionar2">+</string>
+    <string name="lista_de_exerc_cios">Lista de exercícios</string>
+    <string name="buscar_exerc_cio_por_nome">Buscar exercício por nome</string>
+    <string name="nome_do_exerc_cio1">Nome do Exercício</string>
+    <string name="grupo_muscular">Grupo Muscular</string>
+    <string name="excluir_exerc_cio">Excluir exercício</string>
+    <string name="nome_do_plano_de_treino">Nome do Plano de Treino</string>
+    <string name="deletar_plano">Deletar plano</string>
+    <string name="nome_da_rotina">Nome da Rotina</string>
+    <string name="deletar">Deletar</string>
 
 </resources>
