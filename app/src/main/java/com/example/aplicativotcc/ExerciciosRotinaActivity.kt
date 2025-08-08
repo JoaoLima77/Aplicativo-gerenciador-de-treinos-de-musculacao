@@ -55,9 +55,16 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
         val btnAdicionar: Button = findViewById(R.id.btnAddExercicio)
         btnAdicionar.setOnClickListener { mostrarDialogListaDeExerciciosGlobais() }
 
-        adapterDaRotina = ExerciciosDarotinaAdapter(listaExerciciosDaRotina) { exercicio ->
-            mostrarDialogEditarExercicio(exercicio)
-        }
+        adapterDaRotina = ExerciciosDarotinaAdapter(
+            listaExerciciosDaRotina,
+            onClick = { exercicio ->
+                mostrarDialogEditarExercicio(exercicio)
+            },
+            onDelete = { exercicio ->
+                confirmarRemocaoExercicio(exercicio)
+            }
+        )
+
 
         recyclerView.adapter = adapterDaRotina
 
@@ -183,6 +190,29 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
                 }
             }
             .setNegativeButton("Cancelar", null)
+            .show()
+    }
+    private fun confirmarRemocaoExercicio(exercicio: Exercicio) {
+        AlertDialog.Builder(this)
+            .setTitle("Excluir exercício")
+            .setMessage("Deseja excluir '${exercicio.nome}'?")
+            .setPositiveButton("Sim") { _, _ ->
+                exercicio.id?.let { id ->
+                    exerciciosDaRotinaRef.orderByChild("id").equalTo(id)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                for (child in snapshot.children) {
+                                    child.ref.removeValue()
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@ExerciciosRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                }
+            }
+            .setNegativeButton("Não", null)
             .show()
     }
 }

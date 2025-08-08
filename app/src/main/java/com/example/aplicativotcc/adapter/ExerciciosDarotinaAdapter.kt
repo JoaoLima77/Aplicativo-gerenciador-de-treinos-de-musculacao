@@ -3,6 +3,7 @@ package com.example.aplicativotcc.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.R
@@ -10,12 +11,13 @@ import com.example.aplicativotcc.model.Exercicio
 
 class ExerciciosDarotinaAdapter(
     private var lista: List<Exercicio>,
-    private val onClick: (Exercicio) -> Unit
+    private val onClick: (Exercicio) -> Unit,
+    private val onDelete: (Exercicio) -> Unit
 ) : RecyclerView.Adapter<ExerciciosDarotinaAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.activity_exercicios_darotina_adapter, parent, false)
+            .inflate(R.layout.listaexerciciosdarotina, parent, false)
         return ViewHolder(view)
     }
 
@@ -23,6 +25,7 @@ class ExerciciosDarotinaAdapter(
         val exercicio = lista[position]
         holder.bind(exercicio)
         holder.itemView.setOnClickListener { onClick(exercicio) }
+        holder.btnExcluir.setOnClickListener { onDelete(exercicio) }
     }
 
     override fun getItemCount(): Int = lista.size
@@ -36,6 +39,7 @@ class ExerciciosDarotinaAdapter(
         private val nome: TextView = itemView.findViewById(R.id.txtNomeExercicio)
         private val grupo: TextView = itemView.findViewById(R.id.txtGrupoMuscular)
         private val detalhes: TextView = itemView.findViewById(R.id.txtDetalhes)
+        val btnExcluir: ImageButton = itemView.findViewById(R.id.btnExcluir)
 
         fun bind(exercicio: Exercicio) {
             nome.text = exercicio.nome

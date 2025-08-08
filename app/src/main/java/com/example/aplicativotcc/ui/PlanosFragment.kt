@@ -125,8 +125,8 @@ class PlanosFragment : Fragment() {
 
     private fun mostrarDialogConfirmacaoExclusao(plano: PlanoDeTreino) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Confirmar Exclusão")
-            .setMessage("Deseja realmente excluir o plano '${plano.nome}'?")
+            .setTitle("Excluir Plano")
+            .setMessage("Deseja excluir '${plano.nome}'?")
             .setPositiveButton("Sim") { dialog, _ ->
                 plano.id?.let { planosRef.child(it).removeValue() }
                 dialog.dismiss()

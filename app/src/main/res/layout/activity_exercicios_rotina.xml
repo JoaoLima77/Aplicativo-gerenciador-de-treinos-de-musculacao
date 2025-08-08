@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#21232A">
+    android:background="#171a21">
 
     <TextView
         android:id="@+id/tituloRotina"
@@ -36,7 +36,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="16dp"
-        android:backgroundTint="#146CFF"
+        android:backgroundTint="#03A9F4"
         android:text="@string/adicionar1"
         android:textColor="#FFF"
         android:textSize="24sp"
@@ -51,7 +51,7 @@
         android:id="@+id/imgBtnVoltarRotinas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#21232A"
+        android:backgroundTint="#171a21"
         android:contentDescription="@string/botao_voltar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

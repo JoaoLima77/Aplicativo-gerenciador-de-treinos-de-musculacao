@@ -128,7 +128,7 @@ class RotinasActivity : AppCompatActivity() {
     private fun mostrarDialogConfirmacaoExclusao(rotina: Rotina) {
         AlertDialog.Builder(this)
             .setTitle("Excluir Rotina")
-            .setMessage("Deseja realmente excluir '${rotina.nome}'?")
+            .setMessage("Deseja excluir '${rotina.nome}'?")
             .setPositiveButton("Sim") { dialog, _ ->
                 rotina.id?.let { rotinasRef.child(it).removeValue() }
                 dialog.dismiss()
