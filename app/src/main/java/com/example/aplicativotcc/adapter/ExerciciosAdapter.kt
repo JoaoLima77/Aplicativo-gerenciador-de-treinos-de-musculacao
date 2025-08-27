@@ -6,20 +6,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.R
 import com.example.aplicativotcc.model.Exercicio
 
-class ExercicioAdapter(
+class ExerciciosAdapter(
     private var lista: List<Exercicio>,
-    private val onDeleteClick: (Exercicio) -> Unit
-) : RecyclerView.Adapter<ExercicioAdapter.ExercicioViewHolder>() {
+    private val onDeleteClick: (Exercicio) -> Unit,
+    private val onEditClick: (Exercicio) -> Unit
+) : RecyclerView.Adapter<ExerciciosAdapter.ExercicioViewHolder>() {
 
     inner class ExercicioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nomeText: TextView = itemView.findViewById(R.id.nomeExercicioText)
         val grupoText: TextView = itemView.findViewById(R.id.grupoMuscularText)
-        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDeleteExercicio)
+        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
+        val btnEdit: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExercicioViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.listaexercicios, parent, false)
+            .inflate(R.layout.item_exercicios, parent, false)
         return ExercicioViewHolder(view)
     }
 
@@ -28,6 +30,7 @@ class ExercicioAdapter(
         holder.nomeText.text = exercicio.nome
         holder.grupoText.text = exercicio.grupoMuscular
         holder.btnDelete.setOnClickListener { onDeleteClick(exercicio) }
+        holder.btnEdit.setOnClickListener { onEditClick(exercicio) }
     }
 
     override fun getItemCount() = lista.size

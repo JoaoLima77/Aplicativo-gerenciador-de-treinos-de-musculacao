@@ -18,17 +18,17 @@
 
         <TextView
             android:id="@+id/txtViewNomeRotina"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/nome_da_rotina"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
+            android:layout_width="281dp"
+            android:layout_height="25dp"
             android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/nome_da_rotina"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgBtnDeletaRotina"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/imgBtnDeletaRotina"
@@ -44,6 +44,21 @@
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintVertical_bias="0.0"
             card_view:tint="#F44336" />
+
+        <ImageButton
+            android:id="@+id/imgBtnEditRotina"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/rotinas_editar"
+            android:src="@android:drawable/ic_menu_edit"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.854"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent"
+            card_view:layout_constraintVertical_bias="0.0"
+            card_view:tint="#3CD548" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

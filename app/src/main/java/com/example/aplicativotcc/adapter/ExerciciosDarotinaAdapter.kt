@@ -11,20 +11,20 @@ import com.example.aplicativotcc.model.Exercicio
 
 class ExerciciosDarotinaAdapter(
     private var lista: List<Exercicio>,
-    private val onClick: (Exercicio) -> Unit,
+    private val onEdit: (Exercicio) -> Unit,
     private val onDelete: (Exercicio) -> Unit
 ) : RecyclerView.Adapter<ExerciciosDarotinaAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.listaexerciciosdarotina, parent, false)
+            .inflate(R.layout.item_exercicios_da_rotina, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val exercicio = lista[position]
         holder.bind(exercicio)
-        holder.itemView.setOnClickListener { onClick(exercicio) }
+        holder.btnEditar.setOnClickListener { onEdit(exercicio) }
         holder.btnExcluir.setOnClickListener { onDelete(exercicio) }
     }
 
@@ -39,7 +39,8 @@ class ExerciciosDarotinaAdapter(
         private val nome: TextView = itemView.findViewById(R.id.txtNomeExercicio)
         private val grupo: TextView = itemView.findViewById(R.id.txtGrupoMuscular)
         private val detalhes: TextView = itemView.findViewById(R.id.txtDetalhes)
-        val btnExcluir: ImageButton = itemView.findViewById(R.id.btnExcluir)
+        val btnExcluir: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
+        val btnEditar: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
 
         fun bind(exercicio: Exercicio) {
             nome.text = exercicio.nome

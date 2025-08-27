@@ -9,20 +9,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.R
 import com.example.aplicativotcc.model.Rotina
 
-class RotinaAdapter(
+class RotinasAdapter(
     private var lista: List<Rotina>,
     private val onDeleteClick: (Rotina) -> Unit,
-    private val onItemClick: (Rotina) -> Unit
-) : RecyclerView.Adapter<RotinaAdapter.RotinaViewHolder>() {
+    private val onItemClick: (Rotina) -> Unit,
+    private val onEditClick: (Rotina) -> Unit
+) : RecyclerView.Adapter<RotinasAdapter.RotinaViewHolder>() {
 
     inner class RotinaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nomeText: TextView = itemView.findViewById(R.id.txtViewNomeRotina)
         val btnDelete: ImageButton = itemView.findViewById(R.id.imgBtnDeletaRotina)
+        val btnEdit: ImageButton = itemView.findViewById(R.id.imgBtnEditRotina)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RotinaViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.listarotinas, parent, false)
+            .inflate(R.layout.item_rotinas, parent, false)
         return RotinaViewHolder(view)
     }
 
@@ -36,6 +38,9 @@ class RotinaAdapter(
 
         holder.itemView.setOnClickListener {
             onItemClick(rotina)
+        }
+        holder.btnEdit.setOnClickListener {
+            onEditClick(rotina)
         }
     }
 

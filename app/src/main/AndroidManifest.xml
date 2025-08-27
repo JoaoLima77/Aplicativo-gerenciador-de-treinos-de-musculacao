@@ -36,7 +36,7 @@
 
         <!-- Tela Exercicios da Rotina  -->
         <activity
-            android:name=".ExerciciosRotinaActivity"
+            android:name=".ExerciciosDaRotinaActivity"
             android:exported="true" />
 
     </application>

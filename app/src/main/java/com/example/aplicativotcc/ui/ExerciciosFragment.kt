@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.LoginActivity
 import com.example.aplicativotcc.R
-import com.example.aplicativotcc.adapter.ExercicioAdapter
+import com.example.aplicativotcc.adapter.ExerciciosAdapter
 import com.example.aplicativotcc.model.Exercicio
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -18,7 +18,7 @@ import com.google.firebase.database.*
 class ExerciciosFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ExercicioAdapter
+    private lateinit var adapter: ExerciciosAdapter
     private lateinit var btnAdd: Button
     private lateinit var exerciciosRef: DatabaseReference
 
@@ -44,9 +44,12 @@ class ExerciciosFragment : Fragment() {
         recyclerView = view.findViewById(R.id.exerciciosRecyclerView)
         btnAdd = view.findViewById(R.id.btnAddExercicio)
 
-        adapter = ExercicioAdapter(listaExercicios) { exercicio ->
-            confirmarExclusao(exercicio)
-        }
+        adapter = ExerciciosAdapter(
+            listaExercicios,
+            onDeleteClick = { exercicio -> confirmarExclusao(exercicio) },
+            onEditClick = { exercicio -> mostrarDialogEditarExercicio(exercicio) } // novo
+        )
+
 
         val searchEditText = view.findViewById<EditText>(R.id.edtTxtPesquisaExc)
 
@@ -74,7 +77,7 @@ class ExerciciosFragment : Fragment() {
     }
 
     private fun mostrarDialogAdicionarExercicio() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_adicionar_exercicio, null)
+        val dialogView = layoutInflater.inflate(R.layout.dialogo_adicionar_exercicio, null)
         val nomeEditText = dialogView.findViewById<EditText>(R.id.nomeExercicioEditText)
         val grupoSpinner = dialogView.findViewById<Spinner>(R.id.grupoMuscularSpinner)
 
@@ -149,4 +152,47 @@ class ExerciciosFragment : Fragment() {
             .setNegativeButton("Não") { dialog, _ -> dialog.dismiss() }
             .show()
     }
+    private fun mostrarDialogEditarExercicio(exercicio: Exercicio) {
+        val dialogView = layoutInflater.inflate(R.layout.dialogo_adicionar_exercicio, null)
+        val nomeEditText = dialogView.findViewById<EditText>(R.id.nomeExercicioEditText)
+        val grupoSpinner = dialogView.findViewById<Spinner>(R.id.grupoMuscularSpinner)
+
+        val grupos = listOf(
+            "Trapézio", "Ombros", "Peito", "Tríceps", "Bíceps", "Antebraço",
+            "Abdômen", "Costas", "Lombar", "Glúteos",
+            "Frente Coxa", "Trás Coxa", "Panturrilha", "Cardio"
+        )
+
+        grupoSpinner.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            grupos
+        )
+
+        // Preenche os campos com os valores atuais
+        nomeEditText.setText(exercicio.nome)
+        val posicaoGrupo = grupos.indexOf(exercicio.grupoMuscular)
+        if (posicaoGrupo >= 0) grupoSpinner.setSelection(posicaoGrupo)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Editar Exercício")
+            .setView(dialogView)
+            .setPositiveButton("Salvar") { _, _ ->
+                val novoNome = nomeEditText.text.toString().trim()
+                val novoGrupo = grupoSpinner.selectedItem.toString()
+
+                if (novoNome.isEmpty()) {
+                    Toast.makeText(requireContext(), "Digite um nome válido", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                exercicio.id?.let {
+                    exerciciosRef.child(it).child("nome").setValue(novoNome)
+                    exerciciosRef.child(it).child("grupoMuscular").setValue(novoGrupo)
+                }
+            }
+            .setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
+            .show()
+    }
+
 }

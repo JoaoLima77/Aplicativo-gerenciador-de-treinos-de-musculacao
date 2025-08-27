@@ -37,7 +37,7 @@
         android:layout_height="60dp"
         android:layout_margin="16dp"
         android:backgroundTint="#03A9F4"
-        android:text="@string/adicionar1"
+        android:text="@string/botao_adicionar"
         android:textColor="#FFF"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"

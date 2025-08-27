@@ -7,7 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.aplicativotcc.adapter.RotinaAdapter
+import com.example.aplicativotcc.adapter.RotinasAdapter
 import com.example.aplicativotcc.model.Rotina
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -16,7 +16,7 @@ class RotinasActivity : AppCompatActivity() {
 
     private lateinit var planoId: String
     private lateinit var planoNome: String
-    private lateinit var rotinaAdapter: RotinaAdapter
+    private lateinit var rotinasAdapter: RotinasAdapter
     private lateinit var rotinasRecyclerView: RecyclerView
     private lateinit var btnAddRotina: Button
 
@@ -62,21 +62,24 @@ class RotinasActivity : AppCompatActivity() {
         rotinasRecyclerView = findViewById(R.id.rotinasRecyclerView)
         rotinasRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        rotinaAdapter = RotinaAdapter(
+        rotinasAdapter = RotinasAdapter(
             listaRotinas,
             onDeleteClick = { rotina ->
                 mostrarDialogConfirmacaoExclusao(rotina)
             },
             onItemClick = { rotina ->
-                val intent = Intent(this, ExerciciosRotinaActivity::class.java)
+                val intent = Intent(this, ExerciciosDaRotinaActivity::class.java)
                 intent.putExtra("PLANO_ID", planoId)
                 intent.putExtra("ROTINA_ID", rotina.id)
                 intent.putExtra("ROTINA_NOME", rotina.nome)
                 startActivity(intent)
+            },
+            onEditClick = { exercicio ->
+                mostrarDialogEditarExercicio(exercicio)
             }
         )
 
-        rotinasRecyclerView.adapter = rotinaAdapter
+        rotinasRecyclerView.adapter = rotinasAdapter
     }
 
     private fun mostrarDialogAdicionarRotina() {
@@ -116,7 +119,7 @@ class RotinasActivity : AppCompatActivity() {
                         listaRotinas.add(it.copy(id = rotinaSnap.key))
                     }
                 }
-                rotinaAdapter.updateRotinas(listaRotinas)
+                rotinasAdapter.updateRotinas(listaRotinas)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -134,6 +137,23 @@ class RotinasActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .setNegativeButton("Não") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+    private fun mostrarDialogEditarExercicio(rotina: Rotina) {
+        val input = EditText(this)
+        input.setText(rotina.nome)
+
+        AlertDialog.Builder(this)
+            .setTitle("Editar Nome da Rotina")
+            .setView(input)
+            .setPositiveButton("Salvar") { dialog, _ ->
+                val novoNome = input.text.toString().trim()
+                if (novoNome.isNotEmpty() && rotina.id != null) {
+                    rotinasRef.child(rotina.id).child("nome").setValue(novoNome)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
             .show()
     }
 }

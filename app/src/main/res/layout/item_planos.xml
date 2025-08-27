@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
@@ -18,17 +19,17 @@
 
         <TextView
             android:id="@+id/txtViewNomePlano"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/nome_do_plano_de_treino"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
+            android:layout_width="282dp"
+            android:layout_height="27dp"
             android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/nome_do_plano_de_treino"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgBtnDeletaPlano"
-            app:layout_constraintHorizontal_bias="0" />
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/imgBtnDeletaPlano"
@@ -36,11 +37,29 @@
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/deletar_plano"
-            app:srcCompat="@android:drawable/ic_delete"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:tint="#F44336" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_delete"
+            app:tint="#F44336"
+            card_view:layout_constraintHorizontal_bias="1.0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintVertical_bias="0.0" />
+
+        <ImageButton
+            android:id="@+id/imgBtnEditRotina"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/planos_editar"
+            android:src="@android:drawable/ic_menu_edit"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.854"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent"
+            card_view:layout_constraintVertical_bias="0.0"
+            card_view:tint="#3CD548" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

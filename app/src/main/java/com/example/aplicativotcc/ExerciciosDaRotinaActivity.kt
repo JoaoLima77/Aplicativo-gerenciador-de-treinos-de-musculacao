@@ -11,7 +11,7 @@ import com.example.aplicativotcc.model.Exercicio
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class ExerciciosRotinaActivity : AppCompatActivity() {
+class ExerciciosDaRotinaActivity : AppCompatActivity() {
 
     private lateinit var adapterDaRotina: ExerciciosDarotinaAdapter
     private lateinit var exerciciosGlobaisRef: DatabaseReference
@@ -25,7 +25,7 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_exercicios_rotina)
+        setContentView(R.layout.activity_exercicios_da_rotina)
 
         planoId = intent.getStringExtra("PLANO_ID") ?: ""
         rotinaId = intent.getStringExtra("ROTINA_ID") ?: ""
@@ -57,7 +57,7 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
 
         adapterDaRotina = ExerciciosDarotinaAdapter(
             listaExerciciosDaRotina,
-            onClick = { exercicio ->
+            onEdit = { exercicio ->
                 mostrarDialogEditarExercicio(exercicio)
             },
             onDelete = { exercicio ->
@@ -83,7 +83,7 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ExerciciosRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExerciciosDaRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -98,13 +98,13 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
                 }
 
                 if (exerciciosGlobais.isEmpty()) {
-                    Toast.makeText(this@ExerciciosRotinaActivity, "Nenhum exercício disponível.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ExerciciosDaRotinaActivity, "Nenhum exercício disponível.", Toast.LENGTH_SHORT).show()
                     return
                 }
 
                 val nomes = exerciciosGlobais.map { it.nome ?: "Sem Nome" }.toTypedArray()
 
-                AlertDialog.Builder(this@ExerciciosRotinaActivity)
+                AlertDialog.Builder(this@ExerciciosDaRotinaActivity)
                     .setTitle("Escolha um exercício")
                     .setItems(nomes) { _, index ->
                         mostrarDialogAdicionarInfo(exerciciosGlobais[index])
@@ -113,13 +113,13 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ExerciciosRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExerciciosDaRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun mostrarDialogAdicionarInfo(exercicio: Exercicio) {
-        val layout = layoutInflater.inflate(R.layout.dialog_info_exercicio, null)
+        val layout = layoutInflater.inflate(R.layout.dialogo_info_exercicio, null)
         val inputSeries = layout.findViewById<EditText>(R.id.editSeries)
         val inputReps = layout.findViewById<EditText>(R.id.editReps)
         val inputPeso = layout.findViewById<EditText>(R.id.editPeso)
@@ -154,7 +154,7 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
     }
 
     private fun mostrarDialogEditarExercicio(exercicio: Exercicio) {
-        val layout = layoutInflater.inflate(R.layout.dialog_info_exercicio, null)
+        val layout = layoutInflater.inflate(R.layout.dialogo_info_exercicio, null)
         val inputSeries = layout.findViewById<EditText>(R.id.editSeries)
         val inputReps = layout.findViewById<EditText>(R.id.editReps)
         val inputPeso = layout.findViewById<EditText>(R.id.editPeso)
@@ -207,7 +207,7 @@ class ExerciciosRotinaActivity : AppCompatActivity() {
                             }
 
                             override fun onCancelled(error: DatabaseError) {
-                                Toast.makeText(this@ExerciciosRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@ExerciciosDaRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
                             }
                         })
                 }

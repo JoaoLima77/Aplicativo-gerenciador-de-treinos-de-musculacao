@@ -6,20 +6,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.R
 import com.example.aplicativotcc.model.PlanoDeTreino
 
-class PlanAdapter(
+class PlanosAdapter(
     private var planos: List<PlanoDeTreino>,
     private val onItemClick: (PlanoDeTreino) -> Unit,
-    private val onDeleteClick: (PlanoDeTreino) -> Unit
-) : RecyclerView.Adapter<PlanAdapter.PlanViewHolder>() {
+    private val onDeleteClick: (PlanoDeTreino) -> Unit,
+    private val onEditClick: (PlanoDeTreino) -> Unit
+) : RecyclerView.Adapter<PlanosAdapter.PlanViewHolder>() {
 
     class PlanViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
         val txtViewNomePlano: TextView = itemView.findViewById(R.id.txtViewNomePlano)
         val imgBtnDeletaPlano: ImageButton = itemView.findViewById(R.id.imgBtnDeletaPlano)
+        val imgBtnEditaPlano: ImageButton = itemView.findViewById(R.id.imgBtnEditRotina)
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): PlanViewHolder {
         val view = android.view.LayoutInflater.from(parent.context)
-            .inflate(R.layout.listaplanos, parent, false)
+            .inflate(R.layout.item_planos, parent, false)
         return PlanViewHolder(view)
     }
 
@@ -34,6 +36,11 @@ class PlanAdapter(
         holder.imgBtnDeletaPlano.setOnClickListener {
             if (plano.id != null) {
                 onDeleteClick(plano)
+            }
+        }
+        holder.imgBtnEditaPlano.setOnClickListener {
+            if (plano.id != null) {
+                onEditClick(plano)
             }
         }
     }

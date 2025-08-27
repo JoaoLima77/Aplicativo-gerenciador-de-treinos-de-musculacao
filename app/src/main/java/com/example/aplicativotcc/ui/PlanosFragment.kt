@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.LoginActivity
 import com.example.aplicativotcc.R
 import com.example.aplicativotcc.RotinasActivity
-import com.example.aplicativotcc.adapter.PlanAdapter
+import com.example.aplicativotcc.adapter.PlanosAdapter
 import com.example.aplicativotcc.model.PlanoDeTreino
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -22,7 +22,7 @@ import com.google.firebase.database.*
 class PlanosFragment : Fragment() {
 
     private lateinit var planosRecyclerView: RecyclerView
-    private lateinit var planAdapter: PlanAdapter
+    private lateinit var planosAdapter: PlanosAdapter
     private lateinit var btnAddPlano: Button
     private lateinit var planosRef: DatabaseReference
 
@@ -59,7 +59,7 @@ class PlanosFragment : Fragment() {
 
     private fun inicializarRecyclerView() {
         planosRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        planAdapter = PlanAdapter(
+        planosAdapter = PlanosAdapter(
             listaPlanos,
             onItemClick = { plano ->
                 val intent = Intent(requireContext(), RotinasActivity::class.java)
@@ -69,9 +69,13 @@ class PlanosFragment : Fragment() {
             },
             onDeleteClick = { plano ->
                 mostrarDialogConfirmacaoExclusao(plano)
+            },
+            onEditClick = { plano ->
+                mostrarDialogEditarPlano(plano)
             }
+
         )
-        planosRecyclerView.adapter = planAdapter
+        planosRecyclerView.adapter = planosAdapter
     }
 
     private fun mostrarDialogAdicionarPlano() {
@@ -114,7 +118,7 @@ class PlanosFragment : Fragment() {
                         listaPlanos.add(it.copy(id = planoSnapshot.key))
                     }
                 }
-                planAdapter.updatePlans(listaPlanos)
+                planosAdapter.updatePlans(listaPlanos)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -132,6 +136,24 @@ class PlanosFragment : Fragment() {
                 dialog.dismiss()
             }
             .setNegativeButton("Não") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+    private fun mostrarDialogEditarPlano(plano: PlanoDeTreino) {
+        val input = EditText(requireContext())
+        input.setText(plano.nome)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Editar Nome do Plano")
+            .setView(input)
+            .setPositiveButton("Salvar") { dialog, _ ->
+                val novoNome = input.text.toString().trim()
+                if (novoNome.isNotEmpty() && plano.id != null) {
+                    planosRef.child(plano.id).child("nome").setValue(novoNome)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
             .show()
     }
 }
