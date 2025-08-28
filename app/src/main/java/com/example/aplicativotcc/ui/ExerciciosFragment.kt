@@ -169,7 +169,6 @@ class ExerciciosFragment : Fragment() {
             grupos
         )
 
-        // Preenche os campos com os valores atuais
         nomeEditText.setText(exercicio.nome)
         val posicaoGrupo = grupos.indexOf(exercicio.grupoMuscular)
         if (posicaoGrupo >= 0) grupoSpinner.setSelection(posicaoGrupo)

@@ -36,7 +36,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="16dp"
-        android:backgroundTint="#03A9F4"
+        android:backgroundTint="#006DE7"
         android:text="@string/botao_adicionar"
         android:textColor="#FFF"
         android:textSize="24sp"

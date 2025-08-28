@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/editNomeRotina"
+        android:layout_width="370dp"
+        android:layout_height="48dp"
+        android:hint="@string/nome_da_rotina"
+        android:inputType="textPersonName"
+        android:padding="10dp"
+        android:textColor="#0B0B0B" />
+
+    <Spinner
+        android:id="@+id/spinnerDiaSemana"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

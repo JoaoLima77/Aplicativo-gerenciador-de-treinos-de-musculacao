@@ -65,7 +65,6 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
             }
         )
 
-
         recyclerView.adapter = adapterDaRotina
 
         carregarExerciciosDaRotina()

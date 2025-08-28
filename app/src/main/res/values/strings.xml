@@ -15,7 +15,7 @@
     <string name="botao_logout">Sair da conta</string>
     <string name="planosmenu">Planos</string>
     <string name="exerciciosmenu">Exercícios</string>
-    <string name="contamenu">Conta</string>"
+    <string name="contamenu">Perfil</string>"
     <string name="excluir_exercicio">Excluir exercício</string>
     <string name="nome_do_exerc_cio">Nome do exercício</string>
     <string name="exerc_cios_da_rotina">Exercícios da Rotina</string>
@@ -34,5 +34,6 @@
     <string name="exercicios_editar">Editar exercício</string>
     <string name="selecao_grupo_muscular">Selecione um grupo muscular</string>
     <string name="exercicios_da_rotina_dados">Séries: 4 • Reps: 12 • Peso: 60kg</string>
+    <string name="diasemana">Segunda-feira</string>
 
 </resources>

@@ -36,7 +36,7 @@
         android:id="@+id/BtnAddRotina"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:backgroundTint="#03A9F4"
+        android:backgroundTint="#006DE7"
         android:gravity="center"
         android:text="@string/botao_adicionar"
         android:textColor="@android:color/white"

@@ -16,7 +16,7 @@ class RotinasActivity : AppCompatActivity() {
 
     private lateinit var planoId: String
     private lateinit var planoNome: String
-    private lateinit var rotinasAdapter: RotinasAdapter
+    private lateinit var rotinaAdapter: RotinasAdapter
     private lateinit var rotinasRecyclerView: RecyclerView
     private lateinit var btnAddRotina: Button
 
@@ -62,7 +62,7 @@ class RotinasActivity : AppCompatActivity() {
         rotinasRecyclerView = findViewById(R.id.rotinasRecyclerView)
         rotinasRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        rotinasAdapter = RotinasAdapter(
+        rotinaAdapter = RotinasAdapter(
             listaRotinas,
             onDeleteClick = { rotina ->
                 mostrarDialogConfirmacaoExclusao(rotina)
@@ -74,37 +74,44 @@ class RotinasActivity : AppCompatActivity() {
                 intent.putExtra("ROTINA_NOME", rotina.nome)
                 startActivity(intent)
             },
-            onEditClick = { exercicio ->
-                mostrarDialogEditarExercicio(exercicio)
+            onEditClick = { rotina ->
+                mostrarDialogEditarRotina(rotina)
             }
         )
 
-        rotinasRecyclerView.adapter = rotinasAdapter
+        rotinasRecyclerView.adapter = rotinaAdapter
     }
 
     private fun mostrarDialogAdicionarRotina() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Nova Rotina")
+        val layout = layoutInflater.inflate(R.layout.dialogo_adicionar_rotina, null)
+        val inputNome = layout.findViewById<EditText>(R.id.editNomeRotina)
+        val spinnerDia = layout.findViewById<Spinner>(R.id.spinnerDiaSemana)
 
-        val input = EditText(this)
-        input.hint = "Nome da Rotina"
-        builder.setView(input)
+        val dias = listOf("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
+        spinnerDia.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, dias)
 
-        builder.setPositiveButton("Salvar") { dialog, _ ->
-            val nomeRotina = input.text.toString().trim()
-            if (nomeRotina.isNotEmpty()) {
-                salvarRotinaNoFirebase(nomeRotina)
-                dialog.dismiss()
+        AlertDialog.Builder(this)
+            .setTitle("Nova Rotina")
+            .setView(layout)
+            .setPositiveButton("Salvar") { dialog, _ ->
+                val nomeRotina = inputNome.text.toString().trim()
+                val diaSemana = spinnerDia.selectedItem.toString()
+                if (nomeRotina.isNotEmpty()) {
+                    salvarRotinaNoFirebase(nomeRotina, diaSemana)
+                    dialog.dismiss()
+                }
             }
-        }
-
-        builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
-        builder.show()
+            .setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
+            .show()
     }
 
-    private fun salvarRotinaNoFirebase(nomeRotina: String) {
+    private fun salvarRotinaNoFirebase(nomeRotina: String, diaSemana: String) {
         val novaRef = rotinasRef.push()
-        val novaRotina = mapOf("nome" to nomeRotina)
+        val novaRotina = mapOf(
+            "id" to novaRef.key,
+            "nome" to nomeRotina,
+            "diaSemana" to diaSemana
+        )
 
         novaRef.setValue(novaRotina)
     }
@@ -119,7 +126,7 @@ class RotinasActivity : AppCompatActivity() {
                         listaRotinas.add(it.copy(id = rotinaSnap.key))
                     }
                 }
-                rotinasAdapter.updateRotinas(listaRotinas)
+                rotinaAdapter.updateRotinas(listaRotinas)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -139,17 +146,30 @@ class RotinasActivity : AppCompatActivity() {
             .setNegativeButton("Não") { dialog, _ -> dialog.dismiss() }
             .show()
     }
-    private fun mostrarDialogEditarExercicio(rotina: Rotina) {
-        val input = EditText(this)
-        input.setText(rotina.nome)
+
+    private fun mostrarDialogEditarRotina(rotina: Rotina) {
+        val layout = layoutInflater.inflate(R.layout.dialogo_adicionar_rotina, null)
+        val inputNome = layout.findViewById<EditText>(R.id.editNomeRotina)
+        val spinnerDia = layout.findViewById<Spinner>(R.id.spinnerDiaSemana)
+
+        val dias = listOf("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
+        spinnerDia.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, dias)
+
+        inputNome.setText(rotina.nome)
+        val pos = dias.indexOf(rotina.diaSemana)
+        if (pos >= 0) spinnerDia.setSelection(pos)
 
         AlertDialog.Builder(this)
-            .setTitle("Editar Nome da Rotina")
-            .setView(input)
+            .setTitle("Editar Rotina")
+            .setView(layout)
             .setPositiveButton("Salvar") { dialog, _ ->
-                val novoNome = input.text.toString().trim()
+                val novoNome = inputNome.text.toString().trim()
+                val novoDia = spinnerDia.selectedItem.toString()
                 if (novoNome.isNotEmpty() && rotina.id != null) {
-                    rotinasRef.child(rotina.id).child("nome").setValue(novoNome)
+                    rotinasRef.child(rotina.id).apply {
+                        child("nome").setValue(novoNome)
+                        child("diaSemana").setValue(novoDia)
+                    }
                 }
                 dialog.dismiss()
             }

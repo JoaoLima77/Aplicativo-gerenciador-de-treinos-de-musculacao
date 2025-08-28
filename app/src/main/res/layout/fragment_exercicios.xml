@@ -39,7 +39,7 @@
         android:id="@+id/btnAddExercicio"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:backgroundTint="#03A9F4"
+        android:backgroundTint="#006DE7"
         android:text="@string/botao_adicionar"
         android:textColor="@android:color/white"
         android:textSize="24sp"

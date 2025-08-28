@@ -18,6 +18,7 @@ class RotinasAdapter(
 
     inner class RotinaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nomeText: TextView = itemView.findViewById(R.id.txtViewNomeRotina)
+        val diaText: TextView = itemView.findViewById(R.id.txtViewDiaSemana)
         val btnDelete: ImageButton = itemView.findViewById(R.id.imgBtnDeletaRotina)
         val btnEdit: ImageButton = itemView.findViewById(R.id.imgBtnEditRotina)
     }
@@ -31,6 +32,7 @@ class RotinasAdapter(
     override fun onBindViewHolder(holder: RotinaViewHolder, position: Int) {
         val rotina = lista[position]
         holder.nomeText.text = rotina.nome
+        holder.diaText.text = rotina.diaSemana ?: ""
 
         holder.btnDelete.setOnClickListener {
             onDeleteClick(rotina)
