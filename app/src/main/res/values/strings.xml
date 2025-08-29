@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">aplicativo TCC</string>
+    <string name="app_name">LioFit</string>
 
     <string name="dica_email">Digite seu email</string>
     <string name="dica_senha">Digite sua senha</string>
@@ -35,5 +35,7 @@
     <string name="selecao_grupo_muscular">Selecione um grupo muscular</string>
     <string name="exercicios_da_rotina_dados">Séries: 4 • Reps: 12 • Peso: 60kg</string>
     <string name="diasemana">Segunda-feira</string>
+    <string name="logo_do_aplicativo">logo do aplicativo</string>
+    <string name="bem_vindo">Bem Vindo!</string>
 
 </resources>
