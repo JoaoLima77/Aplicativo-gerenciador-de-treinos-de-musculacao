@@ -1,15 +1,15 @@
 package com.example.aplicativotcc
 
 import android.content.Intent
-import android.graphics.LinearGradient
-import android.graphics.Shader
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import android.widget.CheckBox
+import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class LoginActivity : AppCompatActivity() {
 
@@ -18,16 +18,29 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
+    private lateinit var checkBoxStayLogged: CheckBox
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
+        sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
 
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
+        checkBoxStayLogged = findViewById(R.id.checkBox)
+
+        // 🔹 Se já está logado e escolheu "manter logado", vai direto pro Home
+        val stayLogged = sharedPreferences.getBoolean("stayLogged", false)
+        val currentUser = auth.currentUser
+        if (stayLogged && currentUser != null) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        }
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -40,8 +53,12 @@ class LoginActivity : AppCompatActivity() {
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
+                    if (checkBoxStayLogged.isChecked) {
+                        sharedPreferences.edit { putBoolean("stayLogged", true) }
+                    } else {
+                        sharedPreferences.edit { putBoolean("stayLogged", false) }
+                    }
                     startActivity(Intent(this, HomeActivity::class.java))
-
                     finish()
                 }
                 .addOnFailureListener {
@@ -61,6 +78,9 @@ class LoginActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Conta criada!", Toast.LENGTH_SHORT).show()
+                    if (checkBoxStayLogged.isChecked) {
+                        sharedPreferences.edit { putBoolean("stayLogged", true) }
+                    }
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 }
