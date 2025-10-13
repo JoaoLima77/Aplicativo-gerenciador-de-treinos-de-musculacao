@@ -11,8 +11,10 @@ import com.example.aplicativotcc.model.Exercicio
 
 class ExerciciosDarotinaAdapter(
     private var lista: List<Exercicio>,
-    private val onEdit: (Exercicio) -> Unit,
-    private val onDelete: (Exercicio) -> Unit
+    private val onEdit: ((Exercicio) -> Unit)? = null,
+    private val onDelete: ((Exercicio) -> Unit)? = null,
+    private val onSelect: ((Exercicio) -> Unit)? = null,
+    private val modoSelecao: Boolean = false
 ) : RecyclerView.Adapter<ExerciciosDarotinaAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -23,9 +25,16 @@ class ExerciciosDarotinaAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val exercicio = lista[position]
-        holder.bind(exercicio)
-        holder.btnEditar.setOnClickListener { onEdit(exercicio) }
-        holder.btnExcluir.setOnClickListener { onDelete(exercicio) }
+        holder.bind(exercicio, modoSelecao)
+
+        if (modoSelecao) {
+            holder.itemView.setOnClickListener { onSelect?.invoke(exercicio) }
+            holder.btnEditar.visibility = View.GONE
+            holder.btnExcluir.visibility = View.GONE
+        } else {
+            holder.btnEditar.setOnClickListener { onEdit?.invoke(exercicio) }
+            holder.btnExcluir.setOnClickListener { onDelete?.invoke(exercicio) }
+        }
     }
 
     override fun getItemCount(): Int = lista.size
@@ -42,17 +51,20 @@ class ExerciciosDarotinaAdapter(
         val btnExcluir: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
         val btnEditar: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
 
-        fun bind(exercicio: Exercicio) {
+        fun bind(exercicio: Exercicio, modoSelecao: Boolean) {
             nome.text = exercicio.nome
             grupo.text = exercicio.grupoMuscular
 
-            val info = listOfNotNull(
-                exercicio.series?.takeIf { it.isNotBlank() }?.let { "Séries: $it" },
-                exercicio.repeticoes?.takeIf { it.isNotBlank() }?.let { "Reps: $it" },
-                exercicio.peso?.takeIf { it.isNotBlank() }?.let { "Peso: $it kg" }
-            )
-
-            detalhes.text = if (info.isNotEmpty()) info.joinToString(" • ") else "Sem detalhes"
+            if (modoSelecao) {
+                detalhes.text = "Toque para adicionar"
+            } else {
+                val info = listOfNotNull(
+                    exercicio.series?.takeIf { it.isNotBlank() }?.let { "Séries: $it" },
+                    exercicio.repeticoes?.takeIf { it.isNotBlank() }?.let { "Reps: $it" },
+                    exercicio.peso?.takeIf { it.isNotBlank() }?.let { "Peso: $it kg" }
+                )
+                detalhes.text = if (info.isNotEmpty()) info.joinToString(" • ") else "Sem detalhes"
+            }
         }
     }
 }

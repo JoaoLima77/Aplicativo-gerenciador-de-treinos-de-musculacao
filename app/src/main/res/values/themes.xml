@@ -6,4 +6,15 @@
     </style>
 
     <style name="Theme.AplicativoTCC" parent="Base.Theme.AplicativoTCC" />
+
+    <style name="CalendarHeaderTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="CalendarWeekDayTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>

@@ -101,14 +101,40 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
                     return
                 }
 
-                val nomes = exerciciosGlobais.map { it.nome ?: "Sem Nome" }.toTypedArray()
+                val dialogView = layoutInflater.inflate(R.layout.dialog_lista_exercicios, null)
+                val editBuscar = dialogView.findViewById<EditText>(R.id.editBuscarExercicio)
+                val recycler = dialogView.findViewById<RecyclerView>(R.id.recyclerExerciciosDialog)
 
-                AlertDialog.Builder(this@ExerciciosDaRotinaActivity)
-                    .setTitle("Escolha um exercício")
-                    .setItems(nomes) { _, index ->
-                        mostrarDialogAdicionarInfo(exerciciosGlobais[index])
+                recycler.layoutManager = LinearLayoutManager(this@ExerciciosDaRotinaActivity)
+                val adapter = ExerciciosDarotinaAdapter(
+                    exerciciosGlobais,
+                    modoSelecao = true,
+                    onSelect = { exercicio ->
+                        mostrarDialogAdicionarInfo(exercicio)
                     }
-                    .show()
+                )
+
+                recycler.adapter = adapter
+
+                val dialog = AlertDialog.Builder(this@ExerciciosDaRotinaActivity)
+                    .setTitle("Escolha um exercício")
+                    .setView(dialogView)
+                    .setNegativeButton("Fechar", null)
+                    .create()
+
+                dialog.show()
+
+                editBuscar.addTextChangedListener(object : android.text.TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        val termo = s.toString().trim().lowercase()
+                        val filtrados = exerciciosGlobais.filter {
+                            it.nome?.lowercase()?.contains(termo) == true
+                        }
+                        adapter.updateLista(filtrados)
+                    }
+                    override fun afterTextChanged(s: android.text.Editable?) {}
+                })
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -116,6 +142,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
             }
         })
     }
+
 
     private fun mostrarDialogAdicionarInfo(exercicio: Exercicio) {
         val layout = layoutInflater.inflate(R.layout.dialogo_info_exercicio, null)

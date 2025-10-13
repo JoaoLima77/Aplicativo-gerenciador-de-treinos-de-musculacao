@@ -33,8 +33,7 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
         checkBoxStayLogged = findViewById(R.id.checkBox)
-
-        // 🔹 Se já está logado e escolheu "manter logado", vai direto pro Home
+        
         val stayLogged = sharedPreferences.getBoolean("stayLogged", false)
         val currentUser = auth.currentUser
         if (stayLogged && currentUser != null) {

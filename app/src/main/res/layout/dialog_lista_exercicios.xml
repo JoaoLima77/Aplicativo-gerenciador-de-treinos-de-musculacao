@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editBuscarExercicio"
+        android:layout_width="380dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:hint="@string/buscar_exerc_cio"
+        android:inputType="text"
+        android:padding="8dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerExerciciosDialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:contentDescription="@string/lista_de_exerc_cios"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        android:scrollbars="vertical" />
+</LinearLayout>

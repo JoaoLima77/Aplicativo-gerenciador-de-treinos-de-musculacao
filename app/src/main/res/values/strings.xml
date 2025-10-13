@@ -11,7 +11,7 @@
     <string name="rotinas">Minhas rotinas</string>
     <string name="descricao_rotinas">Lista de rotinas de treino</string>
     <string name="botao_voltar">Voltar</string>
-    <string name="botao_logout">Sair da conta</string>
+    <string name="botao_logout">Sair</string>
     <string name="planosmenu">Planos</string>
     <string name="exerciciosmenu">Exercícios</string>
     <string name="contamenu">Perfil</string>"
@@ -36,4 +36,6 @@
     <string name="diasemana">Segunda-feira</string>
     <string name="logo_do_aplicativo">logo do aplicativo</string>
     <string name="bem_vindo">Bem Vindo!</string>
+    <string name="buscar_exerc_cio">Buscar exercício...</string>
+    <string name="lista_de_exercicios">Lista de exercicios</string>
 </resources>

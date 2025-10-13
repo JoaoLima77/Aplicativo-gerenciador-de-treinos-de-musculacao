@@ -11,27 +11,33 @@
 
     <Button
         android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="73dp"
+        android:layout_height="48dp"
         android:backgroundTint="#9B0000"
         android:text="@string/botao_logout"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.872" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
-        android:layout_width="377dp"
-        android:layout_height="461dp"
+        android:layout_width="402dp"
+        android:layout_height="474dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.521"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.17000002"
+        app:layout_constraintVertical_bias="0.284"
+        app:mcv_arrowColor="#FFFFFF"
         app:mcv_firstDayOfWeek="monday"
-        app:mcv_showOtherDates="all" />
+        app:mcv_headerTextAppearance="@style/CalendarHeaderTextAppearance"
+        app:mcv_selectionColor="#85B7E9"
+        app:mcv_showOtherDates="all"
+        app:mcv_weekDayTextAppearance="@style/CalendarWeekDayTextAppearance" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
