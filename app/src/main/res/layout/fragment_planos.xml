@@ -25,7 +25,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/plansRecyclerView"
         android:layout_width="400dp"
-        android:layout_height="550dp"
+        android:layout_height="500dp"
         android:contentDescription="@string/descricao_planos"
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"

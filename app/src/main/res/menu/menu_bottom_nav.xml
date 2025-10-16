@@ -1,14 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_planos"
-        android:icon="@android:drawable/ic_menu_agenda"
+        android:icon="@drawable/prancheta_removebg_preview"
         android:title="@string/planosmenu" />
     <item
         android:id="@+id/nav_exercicios"
-        android:icon="@android:drawable/ic_menu_directions"
+        android:icon="@drawable/halter_removebg_preview"
         android:title="@string/exerciciosmenu" />
     <item
         android:id="@+id/nav_conta"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:title="@string/contamenu" />
+        android:icon="@drawable/prancheta_registro_removebg_preview"
+        android:title="@string/registro" />
 </menu>

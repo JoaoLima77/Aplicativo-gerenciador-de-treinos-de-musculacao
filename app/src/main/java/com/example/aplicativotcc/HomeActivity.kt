@@ -2,7 +2,7 @@ package com.example.aplicativotcc
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.aplicativotcc.ui.ContaFragment
+import com.example.aplicativotcc.ui.RegistroFragment
 import com.example.aplicativotcc.ui.ExerciciosFragment
 import com.example.aplicativotcc.ui.PlanosFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -28,7 +28,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 R.id.nav_conta -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.home_fragment_container, ContaFragment())
+                        .replace(R.id.home_fragment_container, RegistroFragment())
                         .commit()
                     true
                 }

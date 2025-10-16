@@ -38,4 +38,7 @@
     <string name="bem_vindo">Bem Vindo!</string>
     <string name="buscar_exerc_cio">Buscar exercício...</string>
     <string name="lista_de_exercicios">Lista de exercicios</string>
+    <string name="registro">Registros</string>
+    <string name="rotina_do_dia">Rotina do dia</string>
+    <string name="manter_conectado">Manter Conectado</string>
 </resources>

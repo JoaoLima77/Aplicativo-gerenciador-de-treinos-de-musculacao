@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#171a21"
@@ -21,23 +20,34 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.050000012" />
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
-        android:layout_width="402dp"
-        android:layout_height="474dp"
+        android:layout_width="340dp"
+        android:layout_height="450dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.521"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.284"
+        app:layout_constraintVertical_bias="0.221"
+
         app:mcv_arrowColor="#FFFFFF"
-        app:mcv_firstDayOfWeek="monday"
         app:mcv_headerTextAppearance="@style/CalendarHeaderTextAppearance"
-        app:mcv_selectionColor="#85B7E9"
+        app:mcv_selectionColor="#006DE7"
         app:mcv_showOtherDates="all"
         app:mcv_weekDayTextAppearance="@style/CalendarWeekDayTextAppearance" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerRotinasDoDia"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:contentDescription="@string/rotina_do_dia"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView"
+        app:layout_constraintVertical_bias="0.0"
+        android:background="#0F1116"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
