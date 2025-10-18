@@ -32,6 +32,9 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
         rotinaNome = intent.getStringExtra("ROTINA_NOME") ?: ""
         title = "Exercícios: $rotinaNome"
 
+        val tituloexercicios = findViewById<TextView>(R.id.txtviewExerciciosRotina)
+        tituloexercicios.text = getString(R.string.titulo_rotinas, rotinaNome)
+
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         exerciciosGlobaisRef = FirebaseDatabase.getInstance().getReference("usuarios")

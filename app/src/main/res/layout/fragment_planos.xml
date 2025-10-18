@@ -49,4 +49,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.85" />
 
+    <ImageButton
+        android:id="@+id/imgbtnImportar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#171a21"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.07999998"
+        app:srcCompat="@android:drawable/stat_sys_download_done"
+        android:contentDescription="@string/imporatar_plano"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,10 @@
 package com.example.aplicativotcc
 
+import android.content.ContentValues
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +22,7 @@ class RotinasActivity : AppCompatActivity() {
     private lateinit var rotinaAdapter: RotinasAdapter
     private lateinit var rotinasRecyclerView: RecyclerView
     private lateinit var btnAddRotina: Button
+    private lateinit var btnExportar: ImageButton
 
     private val listaRotinas = mutableListOf<Rotina>()
     private lateinit var rotinasRef: DatabaseReference
@@ -37,6 +41,9 @@ class RotinasActivity : AppCompatActivity() {
         planoNome = intent.getStringExtra("PLANO_NOME") ?: ""
         title = "Rotinas de $planoNome"
 
+        val tituloRotinas = findViewById<TextView>(R.id.txtviewrotina)
+        tituloRotinas.text = getString(R.string.titulo_rotinas, planoNome)
+
         rotinasRef = FirebaseDatabase.getInstance().getReference("usuarios")
             .child(userId)
             .child("planos")
@@ -46,16 +53,15 @@ class RotinasActivity : AppCompatActivity() {
         inicializarRecyclerView()
 
         btnAddRotina = findViewById(R.id.BtnAddRotina)
-        btnAddRotina.setOnClickListener {
-            mostrarDialogAdicionarRotina()
-        }
+        btnAddRotina.setOnClickListener { mostrarDialogAdicionarRotina() }
+
+        btnExportar = findViewById(R.id.imgbtnExportar)
+        btnExportar.setOnClickListener { exportarCSV() }
 
         carregarRotinasDoFirebase()
 
         val btnVoltar: ImageButton = findViewById(R.id.imgBtnVoltarPlanos)
-        btnVoltar.setOnClickListener {
-            finish()
-        }
+        btnVoltar.setOnClickListener { finish() }
     }
 
     private fun inicializarRecyclerView() {
@@ -64,9 +70,7 @@ class RotinasActivity : AppCompatActivity() {
 
         rotinaAdapter = RotinasAdapter(
             listaRotinas,
-            onDeleteClick = { rotina ->
-                mostrarDialogConfirmacaoExclusao(rotina)
-            },
+            onDeleteClick = { rotina -> mostrarDialogConfirmacaoExclusao(rotina) },
             onItemClick = { rotina ->
                 val intent = Intent(this, ExerciciosDaRotinaActivity::class.java)
                 intent.putExtra("PLANO_ID", planoId)
@@ -74,9 +78,7 @@ class RotinasActivity : AppCompatActivity() {
                 intent.putExtra("ROTINA_NOME", rotina.nome)
                 startActivity(intent)
             },
-            onEditClick = { rotina ->
-                mostrarDialogEditarRotina(rotina)
-            }
+            onEditClick = { rotina -> mostrarDialogEditarRotina(rotina) }
         )
 
         rotinasRecyclerView.adapter = rotinaAdapter
@@ -112,7 +114,6 @@ class RotinasActivity : AppCompatActivity() {
             "nome" to nomeRotina,
             "diaSemana" to diaSemana
         )
-
         novaRef.setValue(novaRotina)
     }
 
@@ -122,15 +123,13 @@ class RotinasActivity : AppCompatActivity() {
                 listaRotinas.clear()
                 for (rotinaSnap in snapshot.children) {
                     val rotina = rotinaSnap.getValue(Rotina::class.java)
-                    rotina?.let {
-                        listaRotinas.add(it.copy(id = rotinaSnap.key))
-                    }
+                    rotina?.let { listaRotinas.add(it.copy(id = rotinaSnap.key)) }
                 }
                 rotinaAdapter.updateRotinas(listaRotinas)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Erro: ${error.message}")
+                Toast.makeText(this@RotinasActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -175,5 +174,65 @@ class RotinasActivity : AppCompatActivity() {
             }
             .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
             .show()
+    }
+
+    // ---------------------- EXPORTAR CSV ------------------------
+    private fun exportarCSV() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val planosRef = FirebaseDatabase.getInstance()
+            .getReference("usuarios")
+            .child(userId)
+            .child("planos")
+            .child(planoId)
+
+        planosRef.get().addOnSuccessListener { planoSnapshot ->
+            val nomePlano = planoSnapshot.child("nome").getValue(String::class.java) ?: "Plano"
+            val rotinasSnapshot = planoSnapshot.child("rotinas")
+
+            val csvBuilder = StringBuilder()
+            csvBuilder.append("Plano,Rotina,DiaDaSemana,GrupoMuscular,Exercicio,Series,Repeticoes,Peso\n")
+
+            for (rotinaSnap in rotinasSnapshot.children) {
+                val nomeRotina = rotinaSnap.child("nome").getValue(String::class.java)
+                val diaSemana = rotinaSnap.child("diaSemana").getValue(String::class.java)
+                val exerciciosSnap = rotinaSnap.child("exercicios")
+                for (exercicioSnap in exerciciosSnap.children) {
+                    val grupo = exercicioSnap.child("grupoMuscular").getValue(String::class.java)
+                    val nomeEx = exercicioSnap.child("nome").getValue(String::class.java)
+                    val series = exercicioSnap.child("series").getValue(String::class.java)
+                    val reps = exercicioSnap.child("repeticoes").getValue(String::class.java)
+                    val peso = exercicioSnap.child("peso").getValue(String::class.java)
+
+                    csvBuilder.append("$nomePlano,$nomeRotina,$diaSemana,$grupo,$nomeEx,$series,$reps,$peso\n")
+                }
+            }
+
+            val fileName = "${nomePlano.replace(" ", "_")}.csv"
+            val resolver = contentResolver
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
+
+            // Compatível com versões antigas
+            val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI
+            } else {
+                MediaStore.Files.getContentUri("external")
+            }
+
+            val fileUri = resolver.insert(collection, contentValues)
+
+            fileUri?.let { uri ->
+                resolver.openOutputStream(uri)?.use { outputStream ->
+                    outputStream.write(csvBuilder.toString().toByteArray())
+                }
+                contentValues.clear()
+                contentValues.put(MediaStore.Downloads.IS_PENDING, 0)
+                resolver.update(uri, contentValues, null, null)
+                Toast.makeText(this, "Arquivo exportado para Downloads/$fileName", Toast.LENGTH_LONG).show()
+            } ?: Toast.makeText(this, "Erro ao criar arquivo", Toast.LENGTH_SHORT).show()
+        }
     }
 }

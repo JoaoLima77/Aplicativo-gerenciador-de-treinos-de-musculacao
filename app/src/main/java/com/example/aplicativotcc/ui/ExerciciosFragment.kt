@@ -136,7 +136,9 @@ class ExerciciosFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Erro ao carregar: ${error.message}", Toast.LENGTH_SHORT).show()
+                context?.let {
+                    Toast.makeText(it, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }

@@ -1,12 +1,16 @@
 package com.example.aplicativotcc.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,12 +22,14 @@ import com.example.aplicativotcc.adapter.PlanosAdapter
 import com.example.aplicativotcc.model.PlanoDeTreino
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.io.InputStreamReader
 
 class PlanosFragment : Fragment() {
 
     private lateinit var planosRecyclerView: RecyclerView
     private lateinit var planosAdapter: PlanosAdapter
     private lateinit var btnAddPlano: Button
+    private lateinit var btnImportarPlano: ImageButton
     private lateinit var planosRef: DatabaseReference
 
     private val listaPlanos: MutableList<PlanoDeTreino> = mutableListOf()
@@ -49,10 +55,22 @@ class PlanosFragment : Fragment() {
 
         planosRecyclerView = view.findViewById(R.id.plansRecyclerView)
         btnAddPlano = view.findViewById(R.id.BtnAddPlano)
+        btnImportarPlano = view.findViewById(R.id.imgbtnImportar) // novo botão no layout
 
         inicializarRecyclerView()
         btnAddPlano.setOnClickListener { mostrarDialogAdicionarPlano() }
         carregarPlanosDoFirebase()
+
+        // Configurar importação de CSV
+        val pickFileLauncher = registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+            uri?.let { importarCSV(it) }
+        }
+
+        btnImportarPlano.setOnClickListener {
+            pickFileLauncher.launch("text/*")
+        }
 
         return view
     }
@@ -67,13 +85,8 @@ class PlanosFragment : Fragment() {
                 intent.putExtra("PLANO_NOME", plano.nome)
                 startActivity(intent)
             },
-            onDeleteClick = { plano ->
-                mostrarDialogConfirmacaoExclusao(plano)
-            },
-            onEditClick = { plano ->
-                mostrarDialogEditarPlano(plano)
-            }
-
+            onDeleteClick = { plano -> mostrarDialogConfirmacaoExclusao(plano) },
+            onEditClick = { plano -> mostrarDialogEditarPlano(plano) }
         )
         planosRecyclerView.adapter = planosAdapter
     }
@@ -155,5 +168,85 @@ class PlanosFragment : Fragment() {
             }
             .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
             .show()
+    }
+
+    // ---------------------- IMPORTAR ------------------------
+    private fun importarCSV(uri: Uri) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val reader = InputStreamReader(requireContext().contentResolver.openInputStream(uri))
+        val linhas = reader.readLines().drop(1)
+        reader.close()
+
+        val userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(userId)
+        val planosRef = userRef.child("planos")
+        val exerciciosGlobaisRef = userRef.child("exercicios")
+
+        val novoPlanoRef = planosRef.push()
+        var nomePlano: String? = null
+        val rotinasMap = mutableMapOf<String, DatabaseReference>()
+
+        // Buscar exercícios existentes para evitar duplicação
+        exerciciosGlobaisRef.get().addOnSuccessListener { snapshot ->
+            val exerciciosExistentes = mutableSetOf<String>()
+            for (exSnap in snapshot.children) {
+                val nomeExistente = exSnap.child("nome").getValue(String::class.java)
+                nomeExistente?.let { exerciciosExistentes.add(it.lowercase().trim()) }
+            }
+
+            for (linha in linhas) {
+                val partes = linha.split(",")
+                if (partes.size < 8) continue
+
+                nomePlano = partes[0]
+                val nomeRotina = partes[1]
+                val diaSemana = partes[2]
+                val grupoMuscular = partes[3]
+                val nomeEx = partes[4]
+                val series = partes[5]
+                val reps = partes[6]
+                val peso = partes[7]
+
+                // Cria ou obtém referência da rotina
+                val rotinaRef = rotinasMap.getOrPut(nomeRotina) {
+                    val ref = novoPlanoRef.child("rotinas").push()
+                    ref.child("nome").setValue(nomeRotina)
+                    ref.child("diaSemana").setValue(diaSemana)
+                    ref
+                }
+
+                // Adiciona exercício dentro da rotina
+                val exercicioRef = rotinaRef.child("exercicios").push()
+                val exercicioId = exercicioRef.key ?: continue
+                val exercicioData = mapOf(
+                    "id" to exercicioId,
+                    "grupoMuscular" to grupoMuscular,
+                    "nome" to nomeEx,
+                    "series" to series,
+                    "repeticoes" to reps,
+                    "peso" to peso
+                )
+                exercicioRef.setValue(exercicioData)
+
+                // Adiciona no nó global só se ainda não existir
+                if (!exerciciosExistentes.contains(nomeEx.lowercase().trim())) {
+                    val globalExercicioRef = exerciciosGlobaisRef.push()
+                    globalExercicioRef.setValue(
+                        mapOf(
+                            "id" to globalExercicioRef.key,
+                            "grupoMuscular" to grupoMuscular,
+                            "nome" to nomeEx
+                        )
+                    )
+                    exerciciosExistentes.add(nomeEx.lowercase().trim())
+                }
+            }
+
+            if (nomePlano != null)
+                novoPlanoRef.child("nome").setValue(nomePlano)
+
+            Toast.makeText(requireContext(), "Plano importado e exercícios cadastrados!", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Toast.makeText(requireContext(), "Erro ao verificar exercícios existentes.", Toast.LENGTH_SHORT).show()
+        }
     }
 }

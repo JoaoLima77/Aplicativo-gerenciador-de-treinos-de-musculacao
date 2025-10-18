@@ -36,9 +36,12 @@
     <string name="diasemana">Segunda-feira</string>
     <string name="logo_do_aplicativo">logo do aplicativo</string>
     <string name="bem_vindo">Bem Vindo!</string>
-    <string name="buscar_exerc_cio">Buscar exercício...</string>
+    <string name="buscar_exerc_cio">Buscar exercício…</string>
     <string name="lista_de_exercicios">Lista de exercicios</string>
     <string name="registro">Registros</string>
     <string name="rotina_do_dia">Rotina do dia</string>
     <string name="manter_conectado">Manter Conectado</string>
+    <string name="exportar_plano">Exportar Plano</string>
+    <string name="imporatar_plano">Importar Plano</string>
+    <string name="titulo_rotinas">Rotinas de %1$s</string>
 </resources>
