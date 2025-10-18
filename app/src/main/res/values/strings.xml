@@ -44,4 +44,5 @@
     <string name="exportar_plano">Exportar Plano</string>
     <string name="imporatar_plano">Importar Plano</string>
     <string name="titulo_rotinas">Rotinas de %1$s</string>
+    <string name="toque_para_adicionar">Toque para adicionar</string>
 </resources>

@@ -1,19 +1,31 @@
-package com.example.aplicativotcc.ui
+package com.example.aplicativotcc.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
-import android.widget.*
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.aplicativotcc.LoginActivity
 import com.example.aplicativotcc.R
 import com.example.aplicativotcc.adapter.ExerciciosAdapter
 import com.example.aplicativotcc.model.Exercicio
+import com.example.aplicativotcc.ui.activities.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ExerciciosFragment : Fragment() {
 
@@ -53,8 +65,8 @@ class ExerciciosFragment : Fragment() {
 
         val searchEditText = view.findViewById<EditText>(R.id.edtTxtPesquisaExc)
 
-        searchEditText.addTextChangedListener(object : android.text.TextWatcher {
-            override fun afterTextChanged(s: android.text.Editable?) {
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
                 val filtro = s.toString().lowercase()
                 val listaFiltrada = listaExercicios.filter {
                     it.nome?.lowercase()?.contains(filtro) == true

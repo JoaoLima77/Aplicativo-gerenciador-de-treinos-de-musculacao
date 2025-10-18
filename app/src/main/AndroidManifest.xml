@@ -17,7 +17,7 @@
 
         <!-- Tela Login  -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,17 +27,17 @@
 
         <!-- Tela Home  -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.activities.HomeActivity"
             android:exported="true" />
 
         <!-- Tela Rotinas  -->
         <activity
-            android:name=".RotinasActivity"
+            android:name=".ui.activities.RotinasActivity"
             android:exported="true" />
 
         <!-- Tela Exercicios da Rotina  -->
         <activity
-            android:name=".ExerciciosDaRotinaActivity"
+            android:name=".ui.activities.ExerciciosDaRotinaActivity"
             android:exported="true" />
 
     </application>

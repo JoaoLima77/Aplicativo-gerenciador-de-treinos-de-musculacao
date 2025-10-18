@@ -1,10 +1,11 @@
-package com.example.aplicativotcc
+package com.example.aplicativotcc.ui.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.aplicativotcc.ui.RegistroFragment
-import com.example.aplicativotcc.ui.ExerciciosFragment
-import com.example.aplicativotcc.ui.PlanosFragment
+import com.example.aplicativotcc.R
+import com.example.aplicativotcc.ui.fragments.ExerciciosFragment
+import com.example.aplicativotcc.ui.fragments.PlanosFragment
+import com.example.aplicativotcc.ui.fragments.RegistroFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {

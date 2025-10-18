@@ -56,7 +56,7 @@ class ExerciciosDarotinaAdapter(
             grupo.text = exercicio.grupoMuscular
 
             if (modoSelecao) {
-                detalhes.text = "Toque para adicionar"
+                detalhes.text = itemView.context.getString(R.string.toque_para_adicionar)
             } else {
                 val info = listOfNotNull(
                     exercicio.series?.takeIf { it.isNotBlank() }?.let { "Séries: $it" },

@@ -1,15 +1,16 @@
-package com.example.aplicativotcc
+package com.example.aplicativotcc.ui.activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
-import android.widget.CheckBox
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.example.aplicativotcc.R
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
@@ -33,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
         checkBoxStayLogged = findViewById(R.id.checkBox)
-        
+
         val stayLogged = sharedPreferences.getBoolean("stayLogged", false)
         val currentUser = auth.currentUser
         if (stayLogged && currentUser != null) {

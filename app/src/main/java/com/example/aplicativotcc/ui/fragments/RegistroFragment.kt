@@ -1,6 +1,9 @@
-package com.example.aplicativotcc.ui
+package com.example.aplicativotcc.ui.fragments
+
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,23 +12,28 @@ import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.aplicativotcc.LoginActivity
 import com.example.aplicativotcc.R
-import com.example.aplicativotcc.adapter.RotinaRegistroAdapter
+import com.example.aplicativotcc.adapter.RegistroAdapter
 import com.example.aplicativotcc.model.Rotina
+import com.example.aplicativotcc.ui.activities.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class RegistroFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: RotinaRegistroAdapter
+    private lateinit var adapter: RegistroAdapter
     private val listaRotinas = mutableListOf<Rotina>()
-    private val diasComRotina = mutableSetOf<Int>() // Dias da semana (1=Domingo...7=Sábado)
+    private val diasComRotina = mutableSetOf<Int>()
     private lateinit var calendarView: MaterialCalendarView
     private lateinit var rotinasRef: DatabaseReference
     override fun onCreateView(
@@ -36,14 +44,14 @@ class RegistroFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_registro, container, false)
         view.findViewById<Button>(R.id.btnLogout).setOnClickListener {
             FirebaseAuth.getInstance().signOut()
-            startActivity(android.content.Intent(requireContext(), LoginActivity::class.java))
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
             activity?.finish()
         }
         calendarView = view.findViewById(R.id.calendarView)
         recyclerView = view.findViewById(R.id.recyclerRotinasDoDia)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = RotinaRegistroAdapter(listaRotinas) { rotina ->
+        adapter = RegistroAdapter(listaRotinas) { rotina ->
         }
         recyclerView.adapter = adapter
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return view
@@ -55,9 +63,9 @@ class RegistroFragment : Fragment() {
         calendarView.addDecorator(DiasDoMesAtualDecorator())
         calendarView.addDecorator(DiasForaDoMesDecorator())
         calendarView.setOnDateChangedListener { _, date, _ ->
-            val calendar = Calendar.getInstance()
-            calendar.time = date.date
-            val diaSelecionado = when (calendar.get(Calendar.DAY_OF_WEEK)) {
+            val calendario = Calendar.getInstance()
+            calendario.time = date.date
+            val diaSelecionado = when (calendario.get(Calendar.DAY_OF_WEEK)) {
                 Calendar.MONDAY -> "Segunda"
                 Calendar.TUESDAY -> "Terça"
                 Calendar.WEDNESDAY -> "Quarta"
@@ -134,7 +142,7 @@ class RegistroFragment : Fragment() {
             return day.month == hoje.month && day.year == hoje.year
         }
         override fun decorate(view: DayViewFacade) {
-            view.addSpan(android.text.style.ForegroundColorSpan("#FFFFFF".toColorInt()))
+            view.addSpan(ForegroundColorSpan("#FFFFFF".toColorInt()))
         }
     }
     inner class DiasForaDoMesDecorator : DayViewDecorator {
@@ -143,7 +151,7 @@ class RegistroFragment : Fragment() {
             return day.month != hoje.month || day.year != hoje.year
         }
         override fun decorate(view: DayViewFacade) {
-            view.addSpan(android.text.style.ForegroundColorSpan("#AA595959".toColorInt()))
+            view.addSpan(ForegroundColorSpan("#AA595959".toColorInt()))
         }
     }
 }

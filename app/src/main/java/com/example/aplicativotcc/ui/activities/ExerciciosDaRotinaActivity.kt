@@ -1,15 +1,26 @@
-package com.example.aplicativotcc
+package com.example.aplicativotcc.ui.activities
 
 import android.os.Bundle
-import android.widget.*
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.aplicativotcc.R
 import com.example.aplicativotcc.adapter.ExerciciosDarotinaAdapter
 import com.example.aplicativotcc.model.Exercicio
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ExerciciosDaRotinaActivity : AppCompatActivity() {
 
@@ -104,7 +115,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
                     return
                 }
 
-                val dialogView = layoutInflater.inflate(R.layout.dialog_lista_exercicios, null)
+                val dialogView = layoutInflater.inflate(R.layout.dialogo_lista_exercicios, null)
                 val editBuscar = dialogView.findViewById<EditText>(R.id.editBuscarExercicio)
                 val recycler = dialogView.findViewById<RecyclerView>(R.id.recyclerExerciciosDialog)
 
@@ -127,7 +138,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
 
                 dialog.show()
 
-                editBuscar.addTextChangedListener(object : android.text.TextWatcher {
+                editBuscar.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                         val termo = s.toString().trim().lowercase()
@@ -136,7 +147,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
                         }
                         adapter.updateLista(filtrados)
                     }
-                    override fun afterTextChanged(s: android.text.Editable?) {}
+                    override fun afterTextChanged(s: Editable?) {}
                 })
             }
 

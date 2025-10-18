@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.aplicativotcc.R
 import com.example.aplicativotcc.model.Rotina
 
-class RotinaRegistroAdapter(
+class RegistroAdapter(
     private var rotinas: List<Rotina>,
     private val onItemClick: (Rotina) -> Unit
-) : RecyclerView.Adapter<RotinaRegistroAdapter.RotinaViewHolder>() {
+) : RecyclerView.Adapter<RegistroAdapter.RotinaViewHolder>() {
 
     inner class RotinaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nomeRotina: TextView = view.findViewById(R.id.txtViewNomeRotina)
