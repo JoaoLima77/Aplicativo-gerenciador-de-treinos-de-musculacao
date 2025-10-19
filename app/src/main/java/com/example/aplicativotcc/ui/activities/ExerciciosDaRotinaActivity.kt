@@ -27,9 +27,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
     private lateinit var adapterDaRotina: ExerciciosDarotinaAdapter
     private lateinit var exerciciosGlobaisRef: DatabaseReference
     private lateinit var exerciciosDaRotinaRef: DatabaseReference
-
     private val listaExerciciosDaRotina = mutableListOf<Exercicio>()
-
     private lateinit var planoId: String
     private lateinit var rotinaId: String
     private lateinit var rotinaNome: String
@@ -66,15 +64,15 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
         val btnVoltar: ImageButton = findViewById(R.id.imgBtnVoltarRotinas)
         btnVoltar.setOnClickListener { finish() }
 
-        val btnAdicionar: Button = findViewById(R.id.btnAddExercicio)
-        btnAdicionar.setOnClickListener { mostrarDialogListaDeExerciciosGlobais() }
+        val btnAddExercicio: Button = findViewById(R.id.btnAddExercicio)
+        btnAddExercicio.setOnClickListener { mostrarDialogListaDeExerciciosGlobais() }
 
         adapterDaRotina = ExerciciosDarotinaAdapter(
             listaExerciciosDaRotina,
-            onEdit = { exercicio ->
+            onEditClick = { exercicio ->
                 mostrarDialogEditarExercicio(exercicio)
             },
-            onDelete = { exercicio ->
+            onDeleteClick = { exercicio ->
                 confirmarRemocaoExercicio(exercicio)
             }
         )
@@ -123,7 +121,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
                 val adapter = ExerciciosDarotinaAdapter(
                     exerciciosGlobais,
                     modoSelecao = true,
-                    onSelect = { exercicio ->
+                    onItemClick = { exercicio ->
                         mostrarDialogAdicionarInfo(exercicio)
                     }
                 )

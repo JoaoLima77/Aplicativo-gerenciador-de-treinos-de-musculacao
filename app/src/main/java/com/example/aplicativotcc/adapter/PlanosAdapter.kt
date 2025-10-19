@@ -14,9 +14,9 @@ class PlanosAdapter(
 ) : RecyclerView.Adapter<PlanosAdapter.PlanViewHolder>() {
 
     class PlanViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
-        val txtViewNomePlano: TextView = itemView.findViewById(R.id.txtViewNomePlano)
+        val txtViewNome: TextView = itemView.findViewById(R.id.txtViewNomePlano)
         val imgBtnDeletaPlano: ImageButton = itemView.findViewById(R.id.imgBtnDeletaPlano)
-        val imgBtnEditaPlano: ImageButton = itemView.findViewById(R.id.imgBtnEditRotina)
+        val imgBtnEditaPlano: ImageButton = itemView.findViewById(R.id.imgBtnEditPlano)
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): PlanViewHolder {
@@ -27,7 +27,7 @@ class PlanosAdapter(
 
     override fun onBindViewHolder(holder: PlanViewHolder, position: Int) {
         val plano = planos[position]
-        holder.txtViewNomePlano.text = plano.nome
+        holder.txtViewNome.text = plano.nome
 
         holder.itemView.setOnClickListener {
             onItemClick(plano)

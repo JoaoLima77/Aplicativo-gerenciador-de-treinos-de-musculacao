@@ -11,9 +11,9 @@ import com.example.aplicativotcc.model.Exercicio
 
 class ExerciciosDarotinaAdapter(
     private var lista: List<Exercicio>,
-    private val onEdit: ((Exercicio) -> Unit)? = null,
-    private val onDelete: ((Exercicio) -> Unit)? = null,
-    private val onSelect: ((Exercicio) -> Unit)? = null,
+    private val onEditClick: ((Exercicio) -> Unit)? = null,
+    private val onDeleteClick: ((Exercicio) -> Unit)? = null,
+    private val onItemClick: ((Exercicio) -> Unit)? = null,
     private val modoSelecao: Boolean = false
 ) : RecyclerView.Adapter<ExerciciosDarotinaAdapter.ViewHolder>() {
 
@@ -28,12 +28,12 @@ class ExerciciosDarotinaAdapter(
         holder.bind(exercicio, modoSelecao)
 
         if (modoSelecao) {
-            holder.itemView.setOnClickListener { onSelect?.invoke(exercicio) }
-            holder.btnEditar.visibility = View.GONE
-            holder.btnExcluir.visibility = View.GONE
+            holder.itemView.setOnClickListener { onItemClick?.invoke(exercicio) }
+            holder.imgBtnEdita.visibility = View.GONE
+            holder.imgBtnDeleta.visibility = View.GONE
         } else {
-            holder.btnEditar.setOnClickListener { onEdit?.invoke(exercicio) }
-            holder.btnExcluir.setOnClickListener { onDelete?.invoke(exercicio) }
+            holder.imgBtnEdita.setOnClickListener { onEditClick?.invoke(exercicio) }
+            holder.imgBtnDeleta.setOnClickListener { onDeleteClick?.invoke(exercicio) }
         }
     }
 
@@ -48,8 +48,8 @@ class ExerciciosDarotinaAdapter(
         private val nome: TextView = itemView.findViewById(R.id.txtNomeExercicio)
         private val grupo: TextView = itemView.findViewById(R.id.txtGrupoMuscular)
         private val detalhes: TextView = itemView.findViewById(R.id.txtDetalhes)
-        val btnExcluir: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
-        val btnEditar: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
+        val imgBtnDeleta: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
+        val imgBtnEdita: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
 
         fun bind(exercicio: Exercicio, modoSelecao: Boolean) {
             nome.text = exercicio.nome

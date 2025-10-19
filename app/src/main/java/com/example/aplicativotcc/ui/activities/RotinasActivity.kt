@@ -187,7 +187,6 @@ class RotinasActivity : AppCompatActivity() {
             .show()
     }
 
-    // ---------------------- EXPORTAR CSV ------------------------
     private fun exportarCSV() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val planosRef = FirebaseDatabase.getInstance()
@@ -226,7 +225,6 @@ class RotinasActivity : AppCompatActivity() {
                 put(MediaStore.Downloads.IS_PENDING, 1)
             }
 
-            // Compatível com versões antigas
             val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 MediaStore.Downloads.EXTERNAL_CONTENT_URI
             } else {

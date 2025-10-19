@@ -14,8 +14,8 @@ class RegistroAdapter(
 ) : RecyclerView.Adapter<RegistroAdapter.RotinaViewHolder>() {
 
     inner class RotinaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val nomeRotina: TextView = view.findViewById(R.id.txtViewNomeRotina)
-        val diaSemana: TextView = view.findViewById(R.id.txtViewDiaSemana)
+        val txtViewNome: TextView = view.findViewById(R.id.txtViewNomeRotina)
+        val txtViewDia: TextView = view.findViewById(R.id.txtViewDiaSemana)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RotinaViewHolder {
@@ -26,8 +26,8 @@ class RegistroAdapter(
 
     override fun onBindViewHolder(holder: RotinaViewHolder, position: Int) {
         val rotina = rotinas[position]
-        holder.nomeRotina.text = rotina.nome
-        holder.diaSemana.text = rotina.diaSemana
+        holder.txtViewNome.text = rotina.nome
+        holder.txtViewDia.text = rotina.diaSemana
         holder.itemView.setOnClickListener { onItemClick(rotina) }
     }
 

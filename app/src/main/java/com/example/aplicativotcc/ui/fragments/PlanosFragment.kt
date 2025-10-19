@@ -35,7 +35,6 @@ class PlanosFragment : Fragment() {
     private lateinit var btnAddPlano: Button
     private lateinit var btnImportarPlano: ImageButton
     private lateinit var planosRef: DatabaseReference
-
     private val listaPlanos: MutableList<PlanoDeTreino> = mutableListOf()
 
     override fun onCreateView(
@@ -59,13 +58,12 @@ class PlanosFragment : Fragment() {
 
         planosRecyclerView = view.findViewById(R.id.plansRecyclerView)
         btnAddPlano = view.findViewById(R.id.BtnAddPlano)
-        btnImportarPlano = view.findViewById(R.id.imgbtnImportar) // novo botão no layout
+        btnImportarPlano = view.findViewById(R.id.imgbtnImportar)
 
         inicializarRecyclerView()
         btnAddPlano.setOnClickListener { mostrarDialogAdicionarPlano() }
         carregarPlanosDoFirebase()
 
-        // Configurar importação de CSV
         val pickFileLauncher = registerForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
@@ -189,7 +187,6 @@ class PlanosFragment : Fragment() {
         var nomePlano: String? = null
         val rotinasMap = mutableMapOf<String, DatabaseReference>()
 
-        // Buscar exercícios existentes para evitar duplicação
         exerciciosGlobaisRef.get().addOnSuccessListener { snapshot ->
             val exerciciosExistentes = mutableSetOf<String>()
             for (exSnap in snapshot.children) {
@@ -210,15 +207,12 @@ class PlanosFragment : Fragment() {
                 val reps = partes[6]
                 val peso = partes[7]
 
-                // Cria ou obtém referência da rotina
                 val rotinaRef = rotinasMap.getOrPut(nomeRotina) {
                     val ref = novoPlanoRef.child("rotinas").push()
                     ref.child("nome").setValue(nomeRotina)
                     ref.child("diaSemana").setValue(diaSemana)
                     ref
                 }
-
-                // Adiciona exercício dentro da rotina
                 val exercicioRef = rotinaRef.child("exercicios").push()
                 val exercicioId = exercicioRef.key ?: continue
                 val exercicioData = mapOf(
@@ -230,8 +224,7 @@ class PlanosFragment : Fragment() {
                     "peso" to peso
                 )
                 exercicioRef.setValue(exercicioData)
-
-                // Adiciona no nó global só se ainda não existir
+                
                 if (!exerciciosExistentes.contains(nomeEx.lowercase().trim())) {
                     val globalExercicioRef = exerciciosGlobaisRef.push()
                     globalExercicioRef.setValue(

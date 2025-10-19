@@ -17,10 +17,10 @@ class RotinasAdapter(
 ) : RecyclerView.Adapter<RotinasAdapter.RotinaViewHolder>() {
 
     inner class RotinaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nomeText: TextView = itemView.findViewById(R.id.txtViewNomeRotina)
-        val diaText: TextView = itemView.findViewById(R.id.txtViewDiaSemana)
-        val btnDelete: ImageButton = itemView.findViewById(R.id.imgBtnDeletaRotina)
-        val btnEdit: ImageButton = itemView.findViewById(R.id.imgBtnEditRotina)
+        val txtViewNome: TextView = itemView.findViewById(R.id.txtViewNomeRotina)
+        val txtViewDia: TextView = itemView.findViewById(R.id.txtViewDiaSemana)
+        val btnDeleta: ImageButton = itemView.findViewById(R.id.imgBtnDeletaRotina)
+        val btnEdita: ImageButton = itemView.findViewById(R.id.imgBtnEditRotina)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RotinaViewHolder {
@@ -31,17 +31,17 @@ class RotinasAdapter(
 
     override fun onBindViewHolder(holder: RotinaViewHolder, position: Int) {
         val rotina = lista[position]
-        holder.nomeText.text = rotina.nome
-        holder.diaText.text = rotina.diaSemana ?: ""
+        holder.txtViewNome.text = rotina.nome
+        holder.txtViewDia.text = rotina.diaSemana ?: ""
 
-        holder.btnDelete.setOnClickListener {
+        holder.btnDeleta.setOnClickListener {
             onDeleteClick(rotina)
         }
 
         holder.itemView.setOnClickListener {
             onItemClick(rotina)
         }
-        holder.btnEdit.setOnClickListener {
+        holder.btnEdita.setOnClickListener {
             onEditClick(rotina)
         }
     }

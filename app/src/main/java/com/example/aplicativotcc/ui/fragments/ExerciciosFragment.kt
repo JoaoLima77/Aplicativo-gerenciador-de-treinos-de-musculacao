@@ -31,7 +31,7 @@ class ExerciciosFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ExerciciosAdapter
-    private lateinit var btnAdd: Button
+    private lateinit var btnAddExercicio: Button
     private lateinit var exerciciosRef: DatabaseReference
 
     private val listaExercicios = mutableListOf<Exercicio>()
@@ -54,7 +54,7 @@ class ExerciciosFragment : Fragment() {
             .child("exercicios")
 
         recyclerView = view.findViewById(R.id.exerciciosRecyclerView)
-        btnAdd = view.findViewById(R.id.btnAddExercicio)
+        btnAddExercicio = view.findViewById(R.id.btnAddExercicio)
 
         adapter = ExerciciosAdapter(
             listaExercicios,
@@ -63,9 +63,9 @@ class ExerciciosFragment : Fragment() {
         )
 
 
-        val searchEditText = view.findViewById<EditText>(R.id.edtTxtPesquisaExc)
+        val edtTxtPesquisa = view.findViewById<EditText>(R.id.edtTxtPesquisa)
 
-        searchEditText.addTextChangedListener(object : TextWatcher {
+        edtTxtPesquisa.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val filtro = s.toString().lowercase()
                 val listaFiltrada = listaExercicios.filter {
@@ -81,7 +81,7 @@ class ExerciciosFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        btnAdd.setOnClickListener { mostrarDialogAdicionarExercicio() }
+        btnAddExercicio.setOnClickListener { mostrarDialogAdicionarExercicio() }
 
         carregarExercicios()
 

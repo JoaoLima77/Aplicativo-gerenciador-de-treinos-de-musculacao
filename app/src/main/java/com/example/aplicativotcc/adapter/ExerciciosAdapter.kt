@@ -15,8 +15,8 @@ class ExerciciosAdapter(
     inner class ExercicioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nomeText: TextView = itemView.findViewById(R.id.nomeExercicioText)
         val grupoText: TextView = itemView.findViewById(R.id.grupoMuscularText)
-        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
-        val btnEdit: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
+        val imgBtnDeleta: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)
+        val imgBtnEdita: ImageButton = itemView.findViewById(R.id.btneditarexerciciorotina)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExercicioViewHolder {
@@ -29,8 +29,8 @@ class ExerciciosAdapter(
         val exercicio = lista[position]
         holder.nomeText.text = exercicio.nome
         holder.grupoText.text = exercicio.grupoMuscular
-        holder.btnDelete.setOnClickListener { onDeleteClick(exercicio) }
-        holder.btnEdit.setOnClickListener { onEditClick(exercicio) }
+        holder.imgBtnDeleta.setOnClickListener { onDeleteClick(exercicio) }
+        holder.imgBtnEdita.setOnClickListener { onEditClick(exercicio) }
     }
 
     override fun getItemCount() = lista.size
