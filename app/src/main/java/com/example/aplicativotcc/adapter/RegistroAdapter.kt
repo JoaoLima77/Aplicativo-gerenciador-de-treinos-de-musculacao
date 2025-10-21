@@ -13,7 +13,7 @@ class RegistroAdapter(
     private val onItemClick: (Rotina) -> Unit
 ) : RecyclerView.Adapter<RegistroAdapter.RotinaViewHolder>() {
 
-    inner class RotinaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class RotinaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtViewNome: TextView = view.findViewById(R.id.txtViewNomeRotina)
         val txtViewDia: TextView = view.findViewById(R.id.txtViewDiaSemana)
     }

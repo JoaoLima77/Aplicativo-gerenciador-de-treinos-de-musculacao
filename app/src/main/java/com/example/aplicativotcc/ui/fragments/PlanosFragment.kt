@@ -43,8 +43,8 @@ class PlanosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_planos, container, false)
-
         val user = FirebaseAuth.getInstance().currentUser
+
         if (user == null) {
             startActivity(Intent(requireContext(), LoginActivity::class.java))
             activity?.finish()
@@ -60,9 +60,23 @@ class PlanosFragment : Fragment() {
         btnAddPlano = view.findViewById(R.id.BtnAddPlano)
         btnImportarPlano = view.findViewById(R.id.imgbtnImportar)
 
-        inicializarRecyclerView()
-        btnAddPlano.setOnClickListener { mostrarDialogAdicionarPlano() }
-        carregarPlanosDoFirebase()
+        planosRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        planosAdapter = PlanosAdapter(
+            listaPlanos,
+            onItemClick = { plano ->
+                val intent = Intent(requireContext(), RotinasActivity::class.java)
+                intent.putExtra("PLANO_ID", plano.id)
+                intent.putExtra("PLANO_NOME", plano.nome)
+                startActivity(intent)
+            },
+            onDeleteClick = { plano -> excluirPlano(plano) },
+            onEditClick = { plano -> editarPlano(plano) }
+        )
+        planosRecyclerView.adapter = planosAdapter
+
+        btnAddPlano.setOnClickListener { adicionarPlano() }
+
+        carregarPlanos()
 
         val pickFileLauncher = registerForActivityResult(
             ActivityResultContracts.GetContent()
@@ -73,58 +87,36 @@ class PlanosFragment : Fragment() {
         btnImportarPlano.setOnClickListener {
             pickFileLauncher.launch("text/*")
         }
-
         return view
     }
 
-    private fun inicializarRecyclerView() {
-        planosRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        planosAdapter = PlanosAdapter(
-            listaPlanos,
-            onItemClick = { plano ->
-                val intent = Intent(requireContext(), RotinasActivity::class.java)
-                intent.putExtra("PLANO_ID", plano.id)
-                intent.putExtra("PLANO_NOME", plano.nome)
-                startActivity(intent)
-            },
-            onDeleteClick = { plano -> mostrarDialogConfirmacaoExclusao(plano) },
-            onEditClick = { plano -> mostrarDialogEditarPlano(plano) }
-        )
-        planosRecyclerView.adapter = planosAdapter
-    }
-
-    private fun mostrarDialogAdicionarPlano() {
+    private fun adicionarPlano() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Criar Novo Plano de Treino")
-
         val input = EditText(requireContext())
         input.hint = "Nome do Plano"
         builder.setView(input)
-
         builder.setPositiveButton("Salvar") { dialog, _ ->
             val nomePlano = input.text.toString().trim()
             if (nomePlano.isNotEmpty()) {
-                salvarPlanoNoFirebase(nomePlano)
+                val novoPlanoRef = planosRef.push()
+                val plano = mapOf("nome" to nomePlano)
+                novoPlanoRef.setValue(plano)
+                    .addOnSuccessListener { println("Plano salvo com sucesso") }
+                    .addOnFailureListener { println("Erro ao salvar plano: ${it.message}") }
                 dialog.dismiss()
             }
         }
-
         builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
-
         builder.show()
     }
 
-    private fun salvarPlanoNoFirebase(nomePlano: String) {
-        val novoPlanoRef = planosRef.push()
-        val plano = mapOf("nome" to nomePlano)
+    private var planosListener: ValueEventListener? = null
 
-        novoPlanoRef.setValue(plano)
-            .addOnSuccessListener { println("Plano salvo com sucesso") }
-            .addOnFailureListener { println("Erro ao salvar plano: ${it.message}") }
-    }
+    private fun carregarPlanos() {
+        planosListener?.let { planosRef.removeEventListener(it) }
 
-    private fun carregarPlanosDoFirebase() {
-        planosRef.addValueEventListener(object : ValueEventListener {
+        planosListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listaPlanos.clear()
                 for (planoSnapshot in snapshot.children) {
@@ -137,12 +129,29 @@ class PlanosFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Erro ao carregar planos: ${error.message}")
+                    Toast.makeText(requireContext(), "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
-        })
+
+        }
+
+        planosRef.addValueEventListener(planosListener!!)
     }
 
-    private fun mostrarDialogConfirmacaoExclusao(plano: PlanoDeTreino) {
+    override fun onStop() {
+        super.onStop()
+        planosListener?.let {
+            planosRef.removeEventListener(it)
+            planosListener = null
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        carregarPlanos()
+    }
+
+
+    private fun excluirPlano(plano: PlanoDeTreino) {
         AlertDialog.Builder(requireContext())
             .setTitle("Excluir Plano")
             .setMessage("Deseja excluir '${plano.nome}'?")
@@ -154,10 +163,9 @@ class PlanosFragment : Fragment() {
             .show()
     }
 
-    private fun mostrarDialogEditarPlano(plano: PlanoDeTreino) {
+    private fun editarPlano(plano: PlanoDeTreino) {
         val input = EditText(requireContext())
         input.setText(plano.nome)
-
         AlertDialog.Builder(requireContext())
             .setTitle("Editar Nome do Plano")
             .setView(input)
@@ -172,7 +180,6 @@ class PlanosFragment : Fragment() {
             .show()
     }
 
-    // ---------------------- IMPORTAR ------------------------
     private fun importarCSV(uri: Uri) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val reader = InputStreamReader(requireContext().contentResolver.openInputStream(uri))
@@ -188,24 +195,28 @@ class PlanosFragment : Fragment() {
         val rotinasMap = mutableMapOf<String, DatabaseReference>()
 
         exerciciosGlobaisRef.get().addOnSuccessListener { snapshot ->
-            val exerciciosExistentes = mutableSetOf<String>()
+            val exerciciosExistentes = mutableMapOf<String, Pair<String, String>>()
+
             for (exSnap in snapshot.children) {
-                val nomeExistente = exSnap.child("nome").getValue(String::class.java)
-                nomeExistente?.let { exerciciosExistentes.add(it.lowercase().trim()) }
+                val idExistente = exSnap.key ?: continue
+                val nomeExistente = exSnap.child("nome").getValue(String::class.java)?.lowercase()?.trim() ?: continue
+                val grupo = exSnap.child("grupoMuscular").getValue(String::class.java) ?: ""
+                exerciciosExistentes[nomeExistente] = Pair(idExistente, grupo)
             }
 
             for (linha in linhas) {
                 val partes = linha.split(",")
-                if (partes.size < 8) continue
+                if (partes.size < 9) continue
 
                 nomePlano = partes[0]
                 val nomeRotina = partes[1]
                 val diaSemana = partes[2]
                 val grupoMuscular = partes[3]
-                val nomeEx = partes[4]
+                val nomeExercicio = partes[4]
                 val series = partes[5]
                 val reps = partes[6]
                 val peso = partes[7]
+                val exercicioIdCSV = partes.getOrNull(8)
 
                 val rotinaRef = rotinasMap.getOrPut(nomeRotina) {
                     val ref = novoPlanoRef.child("rotinas").push()
@@ -213,37 +224,43 @@ class PlanosFragment : Fragment() {
                     ref.child("diaSemana").setValue(diaSemana)
                     ref
                 }
-                val exercicioRef = rotinaRef.child("exercicios").push()
-                val exercicioId = exercicioRef.key ?: continue
-                val exercicioData = mapOf(
-                    "id" to exercicioId,
+
+                val nomeChave = nomeExercicio.lowercase().trim()
+                val exercicioGlobalId = when {
+                    exerciciosExistentes.containsKey(nomeChave) -> exerciciosExistentes[nomeChave]!!.first
+                    !exercicioIdCSV.isNullOrBlank() -> exercicioIdCSV
+                    else -> exerciciosGlobaisRef.push().key ?: continue
+                }
+                if (!exerciciosExistentes.containsKey(nomeChave)) {
+                    val novoGlobal = mapOf(
+                        "id" to exercicioGlobalId,
+                        "nome" to nomeExercicio,
+                        "grupoMuscular" to grupoMuscular
+                    )
+                    exerciciosGlobaisRef.child(exercicioGlobalId).setValue(novoGlobal)
+                    exerciciosExistentes[nomeChave] = Pair(exercicioGlobalId, grupoMuscular)
+                }
+
+                val exercicioRotinaRef = rotinaRef.child("exercicios").child(exercicioGlobalId)
+                val exercicioRotina = mapOf(
+                    "id" to exercicioGlobalId,
+                    "nome" to nomeExercicio,
                     "grupoMuscular" to grupoMuscular,
-                    "nome" to nomeEx,
                     "series" to series,
                     "repeticoes" to reps,
                     "peso" to peso
                 )
-                exercicioRef.setValue(exercicioData)
-                
-                if (!exerciciosExistentes.contains(nomeEx.lowercase().trim())) {
-                    val globalExercicioRef = exerciciosGlobaisRef.push()
-                    globalExercicioRef.setValue(
-                        mapOf(
-                            "id" to globalExercicioRef.key,
-                            "grupoMuscular" to grupoMuscular,
-                            "nome" to nomeEx
-                        )
-                    )
-                    exerciciosExistentes.add(nomeEx.lowercase().trim())
-                }
+                exercicioRotinaRef.setValue(exercicioRotina)
             }
 
-            if (nomePlano != null)
+            if (nomePlano != null) {
                 novoPlanoRef.child("nome").setValue(nomePlano)
+            }
 
-            Toast.makeText(requireContext(), "Plano importado e exercícios cadastrados!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Plano e exercícios importados com sucesso!", Toast.LENGTH_LONG).show()
+
         }.addOnFailureListener {
-            Toast.makeText(requireContext(), "Erro ao verificar exercícios existentes.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Erro ao importar: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }

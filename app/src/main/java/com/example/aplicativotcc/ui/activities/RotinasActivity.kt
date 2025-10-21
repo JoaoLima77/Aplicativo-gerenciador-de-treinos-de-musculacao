@@ -61,27 +61,12 @@ class RotinasActivity : AppCompatActivity() {
             .child(planoId)
             .child("rotinas")
 
-        inicializarRecyclerView()
-
-        btnAddRotina = findViewById(R.id.BtnAddRotina)
-        btnAddRotina.setOnClickListener { mostrarDialogAdicionarRotina() }
-
-        btnExportar = findViewById(R.id.imgbtnExportar)
-        btnExportar.setOnClickListener { exportarCSV() }
-
-        carregarRotinasDoFirebase()
-
-        val btnVoltar: ImageButton = findViewById(R.id.imgBtnVoltarPlanos)
-        btnVoltar.setOnClickListener { finish() }
-    }
-
-    private fun inicializarRecyclerView() {
         rotinasRecyclerView = findViewById(R.id.rotinasRecyclerView)
         rotinasRecyclerView.layoutManager = LinearLayoutManager(this)
 
         rotinaAdapter = RotinasAdapter(
             listaRotinas,
-            onDeleteClick = { rotina -> mostrarDialogConfirmacaoExclusao(rotina) },
+            onDeleteClick = { rotina -> excluirRotina(rotina) },
             onItemClick = { rotina ->
                 val intent = Intent(this, ExerciciosDaRotinaActivity::class.java)
                 intent.putExtra("PLANO_ID", planoId)
@@ -89,13 +74,24 @@ class RotinasActivity : AppCompatActivity() {
                 intent.putExtra("ROTINA_NOME", rotina.nome)
                 startActivity(intent)
             },
-            onEditClick = { rotina -> mostrarDialogEditarRotina(rotina) }
+            onEditClick = { rotina -> editarRotina(rotina) }
         )
 
         rotinasRecyclerView.adapter = rotinaAdapter
+
+        btnAddRotina = findViewById(R.id.BtnAddRotina)
+        btnAddRotina.setOnClickListener { adicionarRotina() }
+
+        btnExportar = findViewById(R.id.imgbtnExportar)
+        btnExportar.setOnClickListener { exportarCSV() }
+
+        carregarRotinas()
+
+        val btnVoltar: ImageButton = findViewById(R.id.imgBtnVoltarPlanos)
+        btnVoltar.setOnClickListener { finish() }
     }
 
-    private fun mostrarDialogAdicionarRotina() {
+    private fun adicionarRotina() {
         val layout = layoutInflater.inflate(R.layout.dialogo_adicionar_rotina, null)
         val inputNome = layout.findViewById<EditText>(R.id.editNomeRotina)
         val spinnerDia = layout.findViewById<Spinner>(R.id.spinnerDiaSemana)
@@ -110,7 +106,13 @@ class RotinasActivity : AppCompatActivity() {
                 val nomeRotina = inputNome.text.toString().trim()
                 val diaSemana = spinnerDia.selectedItem.toString()
                 if (nomeRotina.isNotEmpty()) {
-                    salvarRotinaNoFirebase(nomeRotina, diaSemana)
+                    val novaRef = rotinasRef.push()
+                    val novaRotina = mapOf(
+                        "id" to novaRef.key,
+                        "nome" to nomeRotina,
+                        "diaSemana" to diaSemana
+                    )
+                    novaRef.setValue(novaRotina)
                     dialog.dismiss()
                 }
             }
@@ -118,18 +120,12 @@ class RotinasActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun salvarRotinaNoFirebase(nomeRotina: String, diaSemana: String) {
-        val novaRef = rotinasRef.push()
-        val novaRotina = mapOf(
-            "id" to novaRef.key,
-            "nome" to nomeRotina,
-            "diaSemana" to diaSemana
-        )
-        novaRef.setValue(novaRotina)
-    }
+    private var rotinasListener: ValueEventListener? = null
 
-    private fun carregarRotinasDoFirebase() {
-        rotinasRef.addValueEventListener(object : ValueEventListener {
+    private fun carregarRotinas() {
+        rotinasListener?.let { rotinasRef.removeEventListener(it) }
+
+        rotinasListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listaRotinas.clear()
                 for (rotinaSnap in snapshot.children) {
@@ -140,12 +136,27 @@ class RotinasActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@RotinasActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RotinasActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+
+        rotinasRef.addValueEventListener(rotinasListener!!)
     }
 
-    private fun mostrarDialogConfirmacaoExclusao(rotina: Rotina) {
+    override fun onStop() {
+        super.onStop()
+        rotinasListener?.let {
+            rotinasRef.removeEventListener(it)
+            rotinasListener = null
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        carregarRotinas()
+    }
+
+    private fun excluirRotina(rotina: Rotina) {
         AlertDialog.Builder(this)
             .setTitle("Excluir Rotina")
             .setMessage("Deseja excluir '${rotina.nome}'?")
@@ -157,7 +168,7 @@ class RotinasActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun mostrarDialogEditarRotina(rotina: Rotina) {
+    private fun editarRotina(rotina: Rotina) {
         val layout = layoutInflater.inflate(R.layout.dialogo_adicionar_rotina, null)
         val inputNome = layout.findViewById<EditText>(R.id.editNomeRotina)
         val spinnerDia = layout.findViewById<Spinner>(R.id.spinnerDiaSemana)
@@ -200,7 +211,7 @@ class RotinasActivity : AppCompatActivity() {
             val rotinasSnapshot = planoSnapshot.child("rotinas")
 
             val csvBuilder = StringBuilder()
-            csvBuilder.append("Plano,Rotina,DiaDaSemana,GrupoMuscular,Exercicio,Series,Repeticoes,Peso\n")
+            csvBuilder.append("Plano,Rotina,DiaDaSemana,GrupoMuscular,Exercicio,Series,Repeticoes,Peso,ExercicioID\n")
 
             for (rotinaSnap in rotinasSnapshot.children) {
                 val nomeRotina = rotinaSnap.child("nome").getValue(String::class.java)
@@ -208,12 +219,13 @@ class RotinasActivity : AppCompatActivity() {
                 val exerciciosSnap = rotinaSnap.child("exercicios")
                 for (exercicioSnap in exerciciosSnap.children) {
                     val grupo = exercicioSnap.child("grupoMuscular").getValue(String::class.java)
-                    val nomeEx = exercicioSnap.child("nome").getValue(String::class.java)
+                    val nomeExercicio = exercicioSnap.child("nome").getValue(String::class.java)
                     val series = exercicioSnap.child("series").getValue(String::class.java)
                     val reps = exercicioSnap.child("repeticoes").getValue(String::class.java)
                     val peso = exercicioSnap.child("peso").getValue(String::class.java)
+                    val exercicioId = exercicioSnap.child("id").getValue(String::class.java)
 
-                    csvBuilder.append("$nomePlano,$nomeRotina,$diaSemana,$grupo,$nomeEx,$series,$reps,$peso\n")
+                    csvBuilder.append("$nomePlano,$nomeRotina,$diaSemana,$grupo,$nomeExercicio,$series,$reps,$peso,$exercicioId\n")
                 }
             }
 

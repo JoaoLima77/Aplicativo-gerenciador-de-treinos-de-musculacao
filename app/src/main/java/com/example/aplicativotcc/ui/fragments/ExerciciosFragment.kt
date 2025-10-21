@@ -58,8 +58,8 @@ class ExerciciosFragment : Fragment() {
 
         adapter = ExerciciosAdapter(
             listaExercicios,
-            onDeleteClick = { exercicio -> confirmarExclusao(exercicio) },
-            onEditClick = { exercicio -> mostrarDialogEditarExercicio(exercicio) } // novo
+            onDeleteClick = { exercicio -> excluirExercicio(exercicio) },
+            onEditClick = { exercicio -> editarExercicio(exercicio) }
         )
 
 
@@ -81,14 +81,14 @@ class ExerciciosFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        btnAddExercicio.setOnClickListener { mostrarDialogAdicionarExercicio() }
+        btnAddExercicio.setOnClickListener { adicionarExercicio() }
 
         carregarExercicios()
 
         return view
     }
 
-    private fun mostrarDialogAdicionarExercicio() {
+    private fun adicionarExercicio() {
         val dialogView = layoutInflater.inflate(R.layout.dialogo_adicionar_exercicio, null)
         val nomeEditText = dialogView.findViewById<EditText>(R.id.nomeExercicioEditText)
         val grupoSpinner = dialogView.findViewById<Spinner>(R.id.grupoMuscularSpinner)
@@ -136,8 +136,12 @@ class ExerciciosFragment : Fragment() {
             .show()
     }
 
+    private var exerciciosListener: ValueEventListener? = null
+
     private fun carregarExercicios() {
-        exerciciosRef.addValueEventListener(object : ValueEventListener {
+        exerciciosListener?.let { exerciciosRef.removeEventListener(it) }
+
+        exerciciosListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listaExercicios.clear()
                 for (item in snapshot.children) {
@@ -148,25 +152,86 @@ class ExerciciosFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                context?.let {
-                    Toast.makeText(it, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
-                }
+                    Toast.makeText(requireContext(), "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+
+        exerciciosRef.addValueEventListener(exerciciosListener!!)
     }
 
-    private fun confirmarExclusao(exercicio: Exercicio) {
+    override fun onStop() {
+        super.onStop()
+        exerciciosListener?.let {
+            exerciciosRef.removeEventListener(it)
+            exerciciosListener = null
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        carregarExercicios()
+    }
+
+
+    private fun excluirExercicio(exercicio: Exercicio) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val planosRef = FirebaseDatabase.getInstance().getReference("usuarios")
+            .child(userId)
+            .child("planos")
+
         AlertDialog.Builder(requireContext())
             .setTitle("Excluir Exercício")
             .setMessage("Deseja excluir '${exercicio.nome}'?")
             .setPositiveButton("Sim") { dialog, _ ->
-                exercicio.id?.let { exerciciosRef.child(it).removeValue() }
+                exercicio.id?.let { exercicioId ->
+
+                    planosRef.get().addOnSuccessListener { snapshot ->
+
+                        val vinculado = snapshot.children.any { planoSnap ->
+                            planoSnap.child("rotinas").children.any { rotinaSnap ->
+                                rotinaSnap.child("exercicios").children.any { exercicioSnap ->
+                                    exercicioSnap.child("id").getValue(String::class.java) == exercicioId
+                                }
+                            }
+                        }
+
+                        if (vinculado) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Não é possível excluir: este exercício está vinculado a uma rotina.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            return@addOnSuccessListener
+                        }
+
+                        exerciciosRef.child(exercicioId).removeValue()
+                            .addOnSuccessListener {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Exercício excluído com sucesso!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Erro ao excluir: ${it.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    }.addOnFailureListener {
+                        Toast.makeText(requireContext(), "Erro ao verificar vínculos.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
                 dialog.dismiss()
             }
             .setNegativeButton("Não") { dialog, _ -> dialog.dismiss() }
             .show()
     }
-    private fun mostrarDialogEditarExercicio(exercicio: Exercicio) {
+
+
+    private fun editarExercicio(exercicio: Exercicio) {
         val dialogView = layoutInflater.inflate(R.layout.dialogo_adicionar_exercicio, null)
         val nomeEditText = dialogView.findViewById<EditText>(R.id.nomeExercicioEditText)
         val grupoSpinner = dialogView.findViewById<Spinner>(R.id.grupoMuscularSpinner)

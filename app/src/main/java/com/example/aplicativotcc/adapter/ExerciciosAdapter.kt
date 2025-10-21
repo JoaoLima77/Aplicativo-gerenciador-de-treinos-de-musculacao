@@ -12,7 +12,7 @@ class ExerciciosAdapter(
     private val onEditClick: (Exercicio) -> Unit
 ) : RecyclerView.Adapter<ExerciciosAdapter.ExercicioViewHolder>() {
 
-    inner class ExercicioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ExercicioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nomeText: TextView = itemView.findViewById(R.id.nomeExercicioText)
         val grupoText: TextView = itemView.findViewById(R.id.grupoMuscularText)
         val imgBtnDeleta: ImageButton = itemView.findViewById(R.id.btnDeletarexerciciorotina)

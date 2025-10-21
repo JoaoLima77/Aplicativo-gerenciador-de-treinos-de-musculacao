@@ -36,6 +36,7 @@ class RegistroFragment : Fragment() {
     private val diasComRotina = mutableSetOf<Int>()
     private lateinit var calendarView: MaterialCalendarView
     private lateinit var rotinasRef: DatabaseReference
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,7 +60,9 @@ class RegistroFragment : Fragment() {
             .getReference("usuarios")
             .child(userId)
             .child("planos")
+
         carregarRotinas()
+
         calendarView.addDecorator(DiasDoMesAtualDecorator())
         calendarView.addDecorator(DiasForaDoMesDecorator())
         calendarView.setOnDateChangedListener { _, date, _ ->
@@ -78,6 +81,7 @@ class RegistroFragment : Fragment() {
         }
         return view
     }
+
     private fun carregarRotinas() {
         rotinasRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -104,6 +108,7 @@ class RegistroFragment : Fragment() {
             override fun onCancelled(error: DatabaseError) {}
         })
     }
+
     private fun mostrarRotinasDoDia(diaSemana: String) {
         listaRotinas.clear()
         rotinasRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -122,6 +127,7 @@ class RegistroFragment : Fragment() {
             override fun onCancelled(error: DatabaseError) {}
         })
     }
+
     inner class DiaComRotinaDecorator : DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
             val cal = Calendar.getInstance()
@@ -136,6 +142,7 @@ class RegistroFragment : Fragment() {
             view.setBackgroundDrawable(drawable)
         }
     }
+
     inner class DiasDoMesAtualDecorator : DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
             val hoje = calendarView.currentDate
@@ -145,6 +152,7 @@ class RegistroFragment : Fragment() {
             view.addSpan(ForegroundColorSpan("#FFFFFF".toColorInt()))
         }
     }
+
     inner class DiasForaDoMesDecorator : DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
             val hoje = calendarView.currentDate

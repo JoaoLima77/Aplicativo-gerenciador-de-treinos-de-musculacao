@@ -65,15 +65,15 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
         btnVoltar.setOnClickListener { finish() }
 
         val btnAddExercicio: Button = findViewById(R.id.btnAddExercicio)
-        btnAddExercicio.setOnClickListener { mostrarDialogListaDeExerciciosGlobais() }
+        btnAddExercicio.setOnClickListener { listaDeExerciciosGlobais() }
 
         adapterDaRotina = ExerciciosDarotinaAdapter(
             listaExerciciosDaRotina,
             onEditClick = { exercicio ->
-                mostrarDialogEditarExercicio(exercicio)
+                editarExercicioDaRotina(exercicio)
             },
             onDeleteClick = { exercicio ->
-                confirmarRemocaoExercicio(exercicio)
+                excluirExercicioDaRotina(exercicio)
             }
         )
 
@@ -82,8 +82,12 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
         carregarExerciciosDaRotina()
     }
 
+    private var exerciciosDaRotinaListener: ValueEventListener? = null
+
     private fun carregarExerciciosDaRotina() {
-        exerciciosDaRotinaRef.addValueEventListener(object : ValueEventListener {
+        exerciciosDaRotinaListener?.let { exerciciosDaRotinaRef.removeEventListener(it) }
+
+        exerciciosDaRotinaListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listaExerciciosDaRotina.clear()
                 for (item in snapshot.children) {
@@ -94,12 +98,28 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ExerciciosDaRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ExerciciosDaRotinaActivity, "Erro: ${error.message}", Toast.LENGTH_SHORT).show()
             }
-        })
+
+        }
+
+        exerciciosDaRotinaRef.addValueEventListener(exerciciosDaRotinaListener!!)
     }
 
-    private fun mostrarDialogListaDeExerciciosGlobais() {
+    override fun onStop() {
+        super.onStop()
+        exerciciosDaRotinaListener?.let {
+            exerciciosDaRotinaRef.removeEventListener(it)
+            exerciciosDaRotinaListener = null
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        carregarExerciciosDaRotina()
+    }
+
+    private fun listaDeExerciciosGlobais() {
         exerciciosGlobaisRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val exerciciosGlobais = mutableListOf<Exercicio>()
@@ -122,7 +142,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
                     exerciciosGlobais,
                     modoSelecao = true,
                     onItemClick = { exercicio ->
-                        mostrarDialogAdicionarInfo(exercicio)
+                        adicionarInfoExercicio(exercicio)
                     }
                 )
 
@@ -154,9 +174,7 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
             }
         })
     }
-
-
-    private fun mostrarDialogAdicionarInfo(exercicio: Exercicio) {
+    private fun adicionarInfoExercicio(exercicio: Exercicio) {
         val layout = layoutInflater.inflate(R.layout.dialogo_info_exercicio, null)
         val inputSeries = layout.findViewById<EditText>(R.id.editSeries)
         val inputReps = layout.findViewById<EditText>(R.id.editReps)
@@ -170,28 +188,58 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
                 val reps = inputReps.text.toString()
                 val peso = inputPeso.text.toString()
 
-                val exercicioMap = mapOf(
-                    "id" to exercicio.id,
-                    "nome" to exercicio.nome,
-                    "grupoMuscular" to exercicio.grupoMuscular,
-                    "series" to series,
-                    "repeticoes" to reps,
-                    "peso" to peso
-                )
+                exerciciosDaRotinaRef.orderByChild("id").equalTo(exercicio.id)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                Toast.makeText(
+                                    this@ExerciciosDaRotinaActivity,
+                                    "Esse exercício já foi adicionado nesta rotina.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                // 🔹 Só adiciona se não existir ainda
+                                val exercicioMap = mapOf(
+                                    "id" to exercicio.id,
+                                    "nome" to exercicio.nome,
+                                    "grupoMuscular" to exercicio.grupoMuscular,
+                                    "series" to series,
+                                    "repeticoes" to reps,
+                                    "peso" to peso
+                                )
 
-                exerciciosDaRotinaRef.push().setValue(exercicioMap)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Exercício adicionado", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Erro: ${it.message}", Toast.LENGTH_SHORT).show()
-                    }
+                                exerciciosDaRotinaRef.push().setValue(exercicioMap)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(
+                                            this@ExerciciosDaRotinaActivity,
+                                            "Exercício adicionado com sucesso!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(
+                                            this@ExerciciosDaRotinaActivity,
+                                            "Erro ao adicionar: ${it.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Toast.makeText(
+                                this@ExerciciosDaRotinaActivity,
+                                "Erro: ${error.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun mostrarDialogEditarExercicio(exercicio: Exercicio) {
+    private fun editarExercicioDaRotina(exercicio: Exercicio) {
         val layout = layoutInflater.inflate(R.layout.dialogo_info_exercicio, null)
         val inputSeries = layout.findViewById<EditText>(R.id.editSeries)
         val inputReps = layout.findViewById<EditText>(R.id.editReps)
@@ -230,7 +278,8 @@ class ExerciciosDaRotinaActivity : AppCompatActivity() {
             .setNegativeButton("Cancelar", null)
             .show()
     }
-    private fun confirmarRemocaoExercicio(exercicio: Exercicio) {
+
+    private fun excluirExercicioDaRotina(exercicio: Exercicio) {
         AlertDialog.Builder(this)
             .setTitle("Excluir exercício")
             .setMessage("Deseja excluir '${exercicio.nome}'?")

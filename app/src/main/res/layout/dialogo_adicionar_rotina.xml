@@ -11,8 +11,7 @@
         android:layout_height="48dp"
         android:hint="@string/nome_da_rotina"
         android:inputType="textPersonName"
-        android:padding="10dp"
-        android:textColor="#0B0B0B" />
+        android:padding="10dp" />
 
     <Spinner
         android:id="@+id/spinnerDiaSemana"

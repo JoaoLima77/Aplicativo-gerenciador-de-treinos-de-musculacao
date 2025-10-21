@@ -13,13 +13,13 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val barraNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.home_fragment_container, PlanosFragment())
             .commit()
 
-        bottomNav.setOnItemSelectedListener { item ->
+       barraNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_planos -> {
                     supportFragmentManager.beginTransaction()

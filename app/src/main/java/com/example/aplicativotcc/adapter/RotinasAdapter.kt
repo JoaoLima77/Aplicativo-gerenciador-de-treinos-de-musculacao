@@ -16,7 +16,7 @@ class RotinasAdapter(
     private val onEditClick: (Rotina) -> Unit
 ) : RecyclerView.Adapter<RotinasAdapter.RotinaViewHolder>() {
 
-    inner class RotinaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class RotinaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtViewNome: TextView = itemView.findViewById(R.id.txtViewNomeRotina)
         val txtViewDia: TextView = itemView.findViewById(R.id.txtViewDiaSemana)
         val btnDeleta: ImageButton = itemView.findViewById(R.id.imgBtnDeletaRotina)

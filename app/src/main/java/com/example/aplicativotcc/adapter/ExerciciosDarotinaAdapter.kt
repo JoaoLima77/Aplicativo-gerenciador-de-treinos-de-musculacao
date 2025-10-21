@@ -15,15 +15,15 @@ class ExerciciosDarotinaAdapter(
     private val onDeleteClick: ((Exercicio) -> Unit)? = null,
     private val onItemClick: ((Exercicio) -> Unit)? = null,
     private val modoSelecao: Boolean = false
-) : RecyclerView.Adapter<ExerciciosDarotinaAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ExerciciosDarotinaAdapter.ExercicioRotinaViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExercicioRotinaViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_exercicios_da_rotina, parent, false)
-        return ViewHolder(view)
+        return ExercicioRotinaViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ExercicioRotinaViewHolder, position: Int) {
         val exercicio = lista[position]
         holder.bind(exercicio, modoSelecao)
 
@@ -44,7 +44,7 @@ class ExerciciosDarotinaAdapter(
         notifyDataSetChanged()
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ExercicioRotinaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nome: TextView = itemView.findViewById(R.id.txtNomeExercicio)
         private val grupo: TextView = itemView.findViewById(R.id.txtGrupoMuscular)
         private val detalhes: TextView = itemView.findViewById(R.id.txtDetalhes)
